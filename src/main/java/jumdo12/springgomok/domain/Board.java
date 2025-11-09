@@ -38,9 +38,56 @@ public class Board {
         }
     }
 
+    public Stone calcWinner(int row, int col) {
+        Stone stone = grid[row][col];
+        if (stone == Stone.EMPTY) {
+            return Stone.EMPTY;
+        }
+
+        int[][] directions = {
+                {0, 1},
+                {1, 0},
+                {1, 1},
+                {1, -1}
+        };
+
+        for (int[] dir : directions) {
+            int dr = dir[0];
+            int dc = dir[1];
+
+            int count = 1;
+
+            count += countConsecutive(row, col, dr, dc, stone);
+            count += countConsecutive(row, col, -dr, -dc, stone);
+
+            if (count == 5) {
+                return stone;
+            }
+        }
+
+        return Stone.EMPTY;
+    }
+
+    private int countConsecutive(int row, int col, int dr, int dc, Stone stone) {
+        int count = 0;
+
+        for (int r = row + dr, c = col + dc;
+             !isOutBound(r, c) && grid[r][c] == stone;
+             r += dr, c += dc) {
+
+            count++;
+        }
+
+        return count;
+    }
+
     private void validateBound(int row, int col){
-        if(row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) {
+        if(isOutBound(row, col)) {
             throw new IllegalArgumentException("착수 위치가 올바르지 않습니다.");
         }
+    }
+
+    private boolean isOutBound(int row, int col) {
+        return row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE;
     }
 }
