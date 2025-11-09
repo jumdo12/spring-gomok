@@ -8,6 +8,8 @@ import java.util.Set;
 @Getter
 public class Room {
 
+    private final static int PARTICIPANT_COUNT = 2;
+
     private Long id;
     private String roomName;
     private User host;
@@ -26,5 +28,42 @@ public class Room {
 
     public static Room create(Long id, String roomName, User host) {
         return new Room(id, roomName, host);
+    }
+
+    public void join(User user) {
+        if (participants.size() >= PARTICIPANT_COUNT) {
+            throw new IllegalArgumentException("방이 이미 가득 찼습니다");
+        }
+
+        boolean alreadyJoined = participants.stream()
+                .anyMatch(p -> p.getUser().equals(user));
+        if (alreadyJoined) {
+            throw new IllegalArgumentException("이미 참가한 유저입니다");
+        }
+
+        Stone stone = getAvailableStone();
+        participants.add(new Participant(user, stone));
+    }
+
+    public void switchParticipantsStone(User user) {
+        for (Participant participant : participants) {
+            participant.switchStone();
+        }
+    }
+
+    private Stone getAvailableStone() {
+        boolean blackUsed = participants.stream()
+                .anyMatch(p -> p.getStone() == Stone.BLACK);
+        boolean whiteUsed = participants.stream()
+                .anyMatch(p -> p.getStone() == Stone.WHITE);
+
+        if (!blackUsed) {
+            return Stone.BLACK;
+        }
+        if (!whiteUsed) {
+            return Stone.WHITE;
+        }
+
+        throw new IllegalStateException("배정할 돌이 없습니다.");
     }
 }
