@@ -17,8 +17,8 @@ class RoomsTest {
     @BeforeEach
     void setUp() {
         rooms = new Rooms();
-        host1 = User.create("host1");
-        host2 = User.create("host2");
+        host1 = User.create("host1","userId","password");
+        host2 = User.create("host2","userId","password");
     }
 
     @Test

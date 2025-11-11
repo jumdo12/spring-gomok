@@ -18,8 +18,8 @@ class RoomTest {
 
     @BeforeEach
     void setUp() {
-        host = User.create("host");
-        guest = User.create("guest");
+        host = User.create("host","userId","password");
+        guest = User.create("guest","userId","password");
 
         room = Room.create(1L, "1번방", host);
     }
@@ -58,7 +58,7 @@ class RoomTest {
     void 가득_찬_방에는_더_이상_참가할_수_없다() {
         room.join(guest); // 2명 채움
 
-        User another = User.create("another");
+        User another = User.create("another","userId","password");
 
         assertThatThrownBy(() -> room.join(another))
                 .isInstanceOf(IllegalArgumentException.class)

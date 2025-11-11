@@ -16,16 +16,22 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
+
+    @Column(nullable = false)
+    private String userId;
+
+    @Column(nullable = false)
+    private String password;
 
     @Column(nullable = false)
     private String nickname;
 
-    private User (String nickname) {
+    private User (String nickname, String userId, String password) {
         this.nickname = nickname;
     }
 
-    public static User create (String nickname) {
-        return new User(nickname);
+    public static User create (String nickname, String userId, String password) {
+        return new User(nickname, userId, password);
     }
 }
