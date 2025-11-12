@@ -1,6 +1,6 @@
 package jumdo12.springgomok.domain;
 
-public enum GameStatus {
+public enum GomokRoomStatus {
     WAITING,
     READY,
     PLAYING,

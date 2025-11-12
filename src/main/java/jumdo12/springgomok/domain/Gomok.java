@@ -9,8 +9,11 @@ public class Gomok {
 
     private final Stone[][] grid;
 
+    private Stone currTurn;
+
     private Gomok(Stone[][] grid) {
         this.grid = grid;
+        currTurn = Stone.BLACK;
     }
 
     public static Gomok create() {
@@ -30,6 +33,8 @@ public class Gomok {
         validatePosition(row, col);
 
         grid[row][col] = stone;
+
+        currTurn = currTurn.opposite();
     }
 
     private void validatePosition(int row, int col) {
@@ -66,6 +71,12 @@ public class Gomok {
         }
 
         return Stone.EMPTY;
+    }
+
+    private void validateTurn(Stone stone) {
+        if(stone != currTurn) {
+            throw new IllegalArgumentException("상대방의 차례입니다.");
+        }
     }
 
     private int countConsecutive(int row, int col, int dr, int dc, Stone stone) {

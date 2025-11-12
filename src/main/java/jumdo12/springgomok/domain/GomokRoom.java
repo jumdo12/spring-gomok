@@ -3,6 +3,7 @@ package jumdo12.springgomok.domain;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Getter
@@ -15,12 +16,14 @@ public class GomokRoom {
     private User host;
     private Set<Participant> participants;
     private Gomok gomok;
+    private GomokRoomStatus gomokRoomStatus;
 
     private GomokRoom(Long id, String roomName, User host) {
         this.id = id;
         this.roomName = roomName;
         this.host = host;
         this.gomok = Gomok.create();
+        this.gomokRoomStatus = GomokRoomStatus.WAITING;
 
         this.participants = new HashSet<>();
         participants.add(new Participant(host, Stone.BLACK));
@@ -42,7 +45,17 @@ public class GomokRoom {
         }
 
         Stone stone = getAvailableStone();
+        gomokRoomStatus = GomokRoomStatus.READY;
+
         participants.add(new Participant(user, stone));
+    }
+
+    public void startGomok() {
+        if(gomokRoomStatus == GomokRoomStatus.WAITING) {
+            gomokRoomStatus = GomokRoomStatus.PLAYING;
+        }
+
+        throw new IllegalArgumentException("준비가 완료되지 않았습니다");
     }
 
     public void switchParticipantsStone(User user) {
@@ -56,11 +69,26 @@ public class GomokRoom {
     }
 
     public void leave(User user) {
-        boolean removeIf = participants.removeIf(p -> p.getUser().equals(user));
+        Participant participant = getParticipant(user);
 
-        if(!removeIf) {
-            throw new IllegalArgumentException("참가 유저가 아닙니다.");
+        if(gomokRoomStatus == GomokRoomStatus.PLAYING) {
+            throw new IllegalArgumentException("게임이 진행 중 입니다");
         }
+
+        gomokRoomStatus = GomokRoomStatus.WAITING;
+        participants.remove(participant);
+    }
+
+    public Stone placeGomokStone(int row, int col, User user) {
+        if(gomokRoomStatus != GomokRoomStatus.PLAYING) {
+            throw new IllegalArgumentException("게임 진행 중에만 착수할 수 있습니다");
+        }
+
+        Participant participant = getParticipant(user);
+
+        gomok.placeStone(row, col, participant.getStone());
+
+        return gomok.calcWinner(row, col);
     }
 
     private Stone getAvailableStone() {
@@ -77,5 +105,12 @@ public class GomokRoom {
         }
 
         throw new IllegalStateException("배정할 돌이 없습니다.");
+    }
+
+    private Participant getParticipant(User user) {
+        return participants.stream()
+                .filter(p -> p.getUser().equals(user))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("참가자를 찾을 수 없습니다."));
     }
 }
