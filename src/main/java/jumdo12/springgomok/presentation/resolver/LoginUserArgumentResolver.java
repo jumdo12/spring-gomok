@@ -22,7 +22,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginUser.class)
+        return parameter.hasParameterAnnotation(AuthUser.class)
                 && User.class.isAssignableFrom(parameter.getParameterType());
     }
 

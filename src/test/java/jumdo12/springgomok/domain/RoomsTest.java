@@ -25,8 +25,6 @@ class RoomsTest {
     void 방을_생성하면_저장소에_추가된다() {
         Room room = rooms.createRoom("오목1번방", host1);
 
-        assertThat(room).isNull();
-
         List<Room> allRooms = rooms.findAll();
         assertThat(allRooms).hasSize(1);
 
@@ -50,17 +48,10 @@ class RoomsTest {
     void 존재하는_방을_ID로_조회할_수_있다() {
         rooms.createRoom("테스트방", host1);
 
-        Room found = rooms.findById(1L);
+        Room found = rooms.findById(1L).get();
 
         assertThat(found.getRoomName()).isEqualTo("테스트방");
         assertThat(found.getHost()).isEqualTo(host1);
-    }
-
-    @Test
-    void 존재하지_않는_방을_조회하면_예외가_발생한다() {
-        assertThatThrownBy(() -> rooms.findById(999L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 방");
     }
 
     @Test
@@ -83,5 +74,24 @@ class RoomsTest {
 
         assertThat(all).extracting(Room::getRoomName)
                 .containsExactlyInAnyOrder("1번", "2번");
+    }
+
+    @Test
+    void 방장이_방에서_나가면_방을_삭제한다() {
+        Room room = rooms.createRoom("1번", host1);
+
+        rooms.leaveRoom(room.getId(), host1);
+
+        assertThat(rooms.findAll()).hasSize(0);
+    }
+
+    @Test
+    void 방장이_아니라면_방을_나가도_방이_삭제되지_않는다() {
+        Room room = rooms.createRoom("1번", host1);
+        rooms.joinRoom(room.getId(), host2);
+
+        rooms.leaveRoom(room.getId(), host2);
+
+        assertThat(rooms.findAll()).hasSize(1);
     }
 }

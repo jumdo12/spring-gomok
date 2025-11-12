@@ -51,6 +51,18 @@ public class Room {
         }
     }
 
+    public boolean isHost(User user) {
+        return host.equals(user);
+    }
+
+    public void leave(User user) {
+        boolean removeIf = participants.removeIf(p -> p.getUser().equals(user));
+
+        if(!removeIf) {
+            throw new IllegalArgumentException("참가 유저가 아닙니다.");
+        }
+    }
+
     private Stone getAvailableStone() {
         boolean blackUsed = participants.stream()
                 .anyMatch(p -> p.getStone() == Stone.BLACK);

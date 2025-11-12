@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -22,17 +23,30 @@ public class Rooms {
         Long roomId = counter.incrementAndGet();
         Room room = Room.create(roomId, roomName, user);
 
-        return rooms.put(roomId, room);
+        rooms.put(roomId, room);
+        return room;
     }
 
-    public Room findById(Long roomId) {
-        Room room = rooms.get(roomId);
+    public void joinRoom(Long roomId, User user) {
+        Room room = getRoom(roomId);
 
-        if (room == null) {
-            throw new IllegalArgumentException("존재하지 않는 방 입니다.");
+        room.join(user);
+    }
+
+    public void leaveRoom(Long roomId, User user) {
+        Room room = getRoom(roomId);
+
+        if(room.isHost(user)) {
+            rooms.remove(roomId);
+
+            return;
         }
 
-        return room;
+        room.leave(user);
+    }
+
+    public Optional<Room> findById(Long roomId) {
+        return Optional.ofNullable(rooms.get(roomId));
     }
 
     public void remove(Long id) {
@@ -41,5 +55,10 @@ public class Rooms {
 
     public List<Room> findAll() {
         return rooms.values().stream().toList();
+    }
+
+    private Room getRoom(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
     }
 }

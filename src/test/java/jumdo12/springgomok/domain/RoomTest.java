@@ -90,4 +90,35 @@ class RoomTest {
         assertThat(hostP.getStone()).isEqualTo(Stone.WHITE);
         assertThat(guestP.getStone()).isEqualTo(Stone.BLACK);
     }
+
+    @Test
+    void 호스트_판별이_정상적으로_동작한다() {
+        assertThat(room.isHost(host)).isTrue();
+
+        assertThat(room.isHost(guest)).isFalse();
+    }
+
+    @Test
+    void 참가자가_퇴장하면_목록에서_제거된다() {
+        // given
+        room.join(guest);
+        assertThat(room.getParticipants()).hasSize(2);
+
+        // when
+        room.leave(guest);
+
+        // then
+        assertThat(room.getParticipants())
+                .hasSize(1)
+                .allMatch(p -> p.getUser().equals(host));
+    }
+
+    @Test
+    void 참가자가_아닌_유저가_퇴장하려_하면_예외가_발생한다() {
+        User stranger = User.create("stranger", "userId", "password");
+
+        assertThatThrownBy(() -> room.leave(stranger))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("참가 유저가 아닙니다");
+    }
 }
