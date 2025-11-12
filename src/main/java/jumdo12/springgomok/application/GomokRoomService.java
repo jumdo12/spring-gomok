@@ -1,7 +1,7 @@
 package jumdo12.springgomok.application;
 
-import jumdo12.springgomok.domain.Room;
-import jumdo12.springgomok.domain.Rooms;
+import jumdo12.springgomok.domain.GomokRoom;
+import jumdo12.springgomok.domain.GomokRooms;
 import jumdo12.springgomok.domain.User;
 import jumdo12.springgomok.domain.UserRepository;
 import jumdo12.springgomok.presentation.resolver.LoginMember;
@@ -10,25 +10,25 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RoomService {
+public class GomokRoomService {
 
-    private final Rooms rooms;
+    private final GomokRooms gomokRooms;
     private final UserRepository userRepository;
 
     public void joinRoom(Long roomId, LoginMember loginMember) {
         User user = findUser(loginMember.id());
 
-        rooms.joinRoom(roomId, user);
+        gomokRooms.joinRoom(roomId, user);
     }
 
     public void leaveRoom(Long roomId, LoginMember loginMember) {
         User user = findUser(loginMember.id());
 
-        rooms.leaveRoom(roomId, user);
+        gomokRooms.leaveRoom(roomId, user);
     }
 
-    private Room findRoom(Long roomId) {
-        return rooms.findById(roomId)
+    private GomokRoom findRoom(Long roomId) {
+        return gomokRooms.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방 입니다."));
     }
 

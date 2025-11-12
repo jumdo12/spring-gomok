@@ -3,17 +3,17 @@ package jumdo12.springgomok.domain;
 import lombok.Getter;
 
 @Getter
-public class Board {
+public class Gomok {
 
     private static final int BOARD_SIZE = 15;
 
     private final Stone[][] grid;
 
-    private Board(Stone[][] grid) {
+    private Gomok(Stone[][] grid) {
         this.grid = grid;
     }
 
-    public static Board create() {
+    public static Gomok create() {
         Stone[][] grid = new Stone[BOARD_SIZE][BOARD_SIZE];
 
         for(int i = 0; i < BOARD_SIZE; i++) {
@@ -22,7 +22,7 @@ public class Board {
             }
         }
 
-        return new Board(grid);
+        return new Gomok(grid);
     }
 
     public void placeStone(int row, int col, Stone stone) {

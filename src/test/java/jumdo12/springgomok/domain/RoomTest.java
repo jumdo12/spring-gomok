@@ -14,19 +14,19 @@ class RoomTest {
 
     private User host;
     private User guest;
-    private Room room;
+    private GomokRoom room;
 
     @BeforeEach
     void setUp() {
         host = User.create("host","userId","password");
         guest = User.create("guest","userId","password");
 
-        room = Room.create(1L, "1번방", host);
+        room = GomokRoom.create(1L, "1번방", host);
     }
 
     @Test
     void 방_생성시_보드가_생성되고_호스트가_흑돌로_참가자에_등록된다() {
-        assertThat(room.getBoard()).isNotNull();
+        assertThat(room.getGomok()).isNotNull();
         assertThat(room.getRoomName()).isEqualTo("1번방");
         assertThat(room.getHost()).isEqualTo(host);
 
@@ -75,7 +75,7 @@ class RoomTest {
 
     @Test
     void 방장이_색을_바꾸면_둘의_색이_서로_바뀐다() {
-        Room room = Room.create(1L, "테스트방", host);
+        GomokRoom room = GomokRoom.create(1L, "테스트방", host);
         room.join(guest);
 
         room.switchParticipantsStone(host);

@@ -9,35 +9,35 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Component
-public class Rooms {
+public class GomokRooms {
 
-    private final Map<Long, Room> rooms;
+    private final Map<Long, GomokRoom> gomokRooms;
     private final AtomicLong counter;
 
-    public Rooms() {
-        this.rooms = new ConcurrentHashMap<>();
+    public GomokRooms() {
+        this.gomokRooms = new ConcurrentHashMap<>();
         this.counter = new AtomicLong(0);
     }
 
-    public Room createRoom(String roomName, User user) {
+    public GomokRoom createRoom(String roomName, User user) {
         Long roomId = counter.incrementAndGet();
-        Room room = Room.create(roomId, roomName, user);
+        GomokRoom room = GomokRoom.create(roomId, roomName, user);
 
-        rooms.put(roomId, room);
+        gomokRooms.put(roomId, room);
         return room;
     }
 
     public void joinRoom(Long roomId, User user) {
-        Room room = getRoom(roomId);
+        GomokRoom room = getRoom(roomId);
 
         room.join(user);
     }
 
     public void leaveRoom(Long roomId, User user) {
-        Room room = getRoom(roomId);
+        GomokRoom room = getRoom(roomId);
 
         if(room.isHost(user)) {
-            rooms.remove(roomId);
+            gomokRooms.remove(roomId);
 
             return;
         }
@@ -45,19 +45,19 @@ public class Rooms {
         room.leave(user);
     }
 
-    public Optional<Room> findById(Long roomId) {
-        return Optional.ofNullable(rooms.get(roomId));
+    public Optional<GomokRoom> findById(Long roomId) {
+        return Optional.ofNullable(gomokRooms.get(roomId));
     }
 
     public void remove(Long id) {
-        rooms.remove(id);
+        gomokRooms.remove(id);
     }
 
-    public List<Room> findAll() {
-        return rooms.values().stream().toList();
+    public List<GomokRoom> findAll() {
+        return gomokRooms.values().stream().toList();
     }
 
-    private Room getRoom(Long id) {
+    private GomokRoom getRoom(Long id) {
         return findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
     }

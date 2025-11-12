@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-public class Room {
+public class GomokRoom {
 
     private final static int PARTICIPANT_COUNT = 2;
 
@@ -14,20 +14,20 @@ public class Room {
     private String roomName;
     private User host;
     private Set<Participant> participants;
-    private Board board;
+    private Gomok gomok;
 
-    private Room(Long id, String roomName, User host) {
+    private GomokRoom(Long id, String roomName, User host) {
         this.id = id;
         this.roomName = roomName;
         this.host = host;
-        this.board = Board.create();
+        this.gomok = Gomok.create();
 
         this.participants = new HashSet<>();
         participants.add(new Participant(host, Stone.BLACK));
     }
 
-    public static Room create(Long id, String roomName, User host) {
-        return new Room(id, roomName, host);
+    public static GomokRoom create(Long id, String roomName, User host) {
+        return new GomokRoom(id, roomName, host);
     }
 
     public void join(User user) {
