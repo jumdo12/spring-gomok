@@ -51,11 +51,11 @@ public class GomokRoom {
     }
 
     public void startGomok() {
-        if(gomokRoomStatus == GomokRoomStatus.WAITING) {
-            gomokRoomStatus = GomokRoomStatus.PLAYING;
+        if(gomokRoomStatus != GomokRoomStatus.READY) {
+            throw new IllegalArgumentException("준비가 완료되지 않았습니다");
         }
 
-        throw new IllegalArgumentException("준비가 완료되지 않았습니다");
+        gomokRoomStatus = GomokRoomStatus.PLAYING;
     }
 
     public void switchParticipantsStone(User user) {

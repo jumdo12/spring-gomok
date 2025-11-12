@@ -100,14 +100,11 @@ class RoomTest {
 
     @Test
     void 참가자가_퇴장하면_목록에서_제거된다() {
-        // given
         room.join(guest);
         assertThat(room.getParticipants()).hasSize(2);
 
-        // when
         room.leave(guest);
 
-        // then
         assertThat(room.getParticipants())
                 .hasSize(1)
                 .allMatch(p -> p.getUser().equals(host));
@@ -119,6 +116,84 @@ class RoomTest {
 
         assertThatThrownBy(() -> room.leave(stranger))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("참가 유저가 아닙니다");
+                .hasMessageContaining("참가자를 찾을 수 없습니다.");
+    }
+
+    @Test
+    void 게임_진행_중이_아닐_때_착수하면_예외가_발생한다() {
+        // given
+        room.join(guest);
+
+        // when & then
+        assertThatThrownBy(() -> room.placeGomokStone(7, 7, host))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("게임 진행 중에만 착수할 수 있습니다");
+    }
+
+    @Test
+    void 참가자가_아닌_유저가_착수하면_예외가_발생한다() {
+        User stranger = User.create("stranger", "userId", "password");
+        User participant = User.create("participant", "userId", "password");
+
+        room.join(participant);
+        room.startGomok();
+
+        assertThatThrownBy(() -> room.placeGomokStone(7, 7, stranger))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("참가자를 찾을 수 없습니다");
+    }
+
+    @Test
+    void 게임_진행_중_참가자가_착수하면_정상적으로_돌이_놓인다() {
+        room = GomokRoom.create(1L, "테스트방", host);
+        room.join(guest);
+        room.startGomok();
+
+        Stone result = room.placeGomokStone(7, 7, host);
+
+        assertThat(result).isEqualTo(Stone.EMPTY); // 아직 승자 없음
+        assertThat(room.getGomok().getGrid()[7][7]).isEqualTo(Stone.BLACK);
+    }
+
+    @Test
+    void 착수_후_5목을_완성하면_승자를_반환한다() {
+        room.join(guest);
+
+        try {
+            java.lang.reflect.Field statusField = GomokRoom.class.getDeclaredField("gomokRoomStatus");
+            statusField.setAccessible(true);
+            statusField.set(room, GomokRoomStatus.PLAYING);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int col = 3; col <= 6; col++) {
+            room.placeGomokStone(7, col, host);
+        }
+
+        Stone winner = room.placeGomokStone(7, 7, host);
+
+        assertThat(winner).isEqualTo(Stone.BLACK);
+    }
+
+    @Test
+    void 착수_후_5목이_아니면_EMPTY를_반환한다() {
+        room.join(guest);
+
+        try {
+            java.lang.reflect.Field statusField = GomokRoom.class.getDeclaredField("gomokRoomStatus");
+            statusField.setAccessible(true);
+            statusField.set(room, GomokRoomStatus.PLAYING);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int col = 3; col <= 6; col++) {
+            room.placeGomokStone(7, col, host);
+        }
+
+        Stone winner = room.placeGomokStone(8, 8, host);
+
+        assertThat(winner).isEqualTo(Stone.EMPTY);
     }
 }
