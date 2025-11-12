@@ -134,7 +134,7 @@ class RoomTest {
         User participant = User.create("participant", "userId", "password");
 
         room.join(participant);
-        room.startGomok();
+        room.startGomok(host);
 
         assertThatThrownBy(() -> room.placeGomokStone(7, 7, stranger))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -145,7 +145,7 @@ class RoomTest {
     void 게임_진행_중_참가자가_착수하면_정상적으로_돌이_놓인다() {
         room = GomokRoom.create(1L, "테스트방", host);
         room.join(guest);
-        room.startGomok();
+        room.startGomok(host);
 
         room.placeGomokStone(7, 7, host);
         Stone result = room.getWinner(host);
@@ -157,7 +157,7 @@ class RoomTest {
     @Test
     void 착수_후_5목을_완성하면_승자를_반환한다() {
         room.join(guest);
-        room.startGomok();
+        room.startGomok(host);
 
         // host(BLACK)가 가로로 5목을 만들기 위해 (7,3)~(7,7)에 착수
         // guest(WHITE)는 그 사이에 다른 위치에 착수
@@ -183,7 +183,7 @@ class RoomTest {
     @Test
     void 착수_후_5목이_아니면_EMPTY를_반환한다() {
         room.join(guest);
-        room.startGomok();
+        room.startGomok(host);
 
         room.placeGomokStone(7, 3, host);
         room.placeGomokStone(8, 3, guest);
@@ -203,7 +203,7 @@ class RoomTest {
     @Test
     void 상대방_차례에_착수하면_예외가_발생한다() {
         room.join(guest);
-        room.startGomok();
+        room.startGomok(host);
 
         room.placeGomokStone(7, 7, host);
 

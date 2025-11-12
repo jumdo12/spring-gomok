@@ -27,6 +27,12 @@ public class GomokRoomService {
         gomokRooms.leaveRoom(roomId, user);
     }
 
+    public void startGame(Long roomId, LoginUser loginUser) {
+        User user = findUser(loginUser.id());
+
+        gomokRooms.startGame(roomId, user);
+    }
+
     private GomokRoom findRoom(Long roomId) {
         return gomokRooms.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방 입니다."));

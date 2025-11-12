@@ -53,6 +53,12 @@ public class GomokRooms {
         gomokRooms.remove(id);
     }
 
+    public void startGame(Long roomId, User user) {
+        GomokRoom room = getRoom(roomId);
+
+        room.startGomok(user);
+    }
+
     public List<GomokRoom> findAll() {
         return gomokRooms.values().stream().toList();
     }

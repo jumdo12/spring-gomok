@@ -51,7 +51,11 @@ public class GomokRoom {
         participants.add(new Participant(user, stone));
     }
 
-    public void startGomok() {
+    public void startGomok(User user) {
+        if(!isHost(user)) {
+            throw new IllegalArgumentException("방장만 게임을 시작할 수 있습니다");
+        }
+
         if(gomokRoomStatus != GomokRoomStatus.READY) {
             throw new IllegalArgumentException("준비가 완료되지 않았습니다");
         }
