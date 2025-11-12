@@ -16,6 +16,7 @@ public class GomokRoom {
     private Set<Participant> participants;
     private Gomok gomok;
     private GomokRoomStatus gomokRoomStatus;
+    private Stone winner;
 
     private GomokRoom(Long id, String roomName, User host) {
         this.id = id;
@@ -23,6 +24,7 @@ public class GomokRoom {
         this.host = host;
         this.gomok = Gomok.create();
         this.gomokRoomStatus = GomokRoomStatus.WAITING;
+        this.winner = Stone.EMPTY;
 
         this.participants = new HashSet<>();
         participants.add(new Participant(host, Stone.BLACK));
@@ -78,7 +80,7 @@ public class GomokRoom {
         participants.remove(participant);
     }
 
-    public Stone placeGomokStone(int row, int col, User user) {
+    public void placeGomokStone(int row, int col, User user) {
         if(gomokRoomStatus != GomokRoomStatus.PLAYING) {
             throw new IllegalArgumentException("게임 진행 중에만 착수할 수 있습니다");
         }
@@ -95,7 +97,12 @@ public class GomokRoom {
 
         if(winner != Stone.EMPTY) {
             gomokRoomStatus = GomokRoomStatus.FINISHED;
+            this.winner = winner;
         }
+    }
+
+    public Stone getWinner(User user) {
+        Participant participant = getParticipant(user);
 
         return winner;
     }

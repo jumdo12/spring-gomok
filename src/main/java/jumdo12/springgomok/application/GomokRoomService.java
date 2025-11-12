@@ -4,7 +4,7 @@ import jumdo12.springgomok.domain.GomokRoom;
 import jumdo12.springgomok.domain.GomokRooms;
 import jumdo12.springgomok.domain.User;
 import jumdo12.springgomok.domain.UserRepository;
-import jumdo12.springgomok.presentation.resolver.LoginMember;
+import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +15,14 @@ public class GomokRoomService {
     private final GomokRooms gomokRooms;
     private final UserRepository userRepository;
 
-    public void joinRoom(Long roomId, LoginMember loginMember) {
-        User user = findUser(loginMember.id());
+    public void joinRoom(Long roomId, LoginUser loginUser) {
+        User user = findUser(loginUser.id());
 
         gomokRooms.joinRoom(roomId, user);
     }
 
-    public void leaveRoom(Long roomId, LoginMember loginMember) {
-        User user = findUser(loginMember.id());
+    public void leaveRoom(Long roomId, LoginUser loginUser) {
+        User user = findUser(loginUser.id());
 
         gomokRooms.leaveRoom(roomId, user);
     }

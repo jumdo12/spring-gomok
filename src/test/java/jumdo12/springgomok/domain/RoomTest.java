@@ -121,10 +121,8 @@ class RoomTest {
 
     @Test
     void 게임_진행_중이_아닐_때_착수하면_예외가_발생한다() {
-        // given
         room.join(guest);
 
-        // when & then
         assertThatThrownBy(() -> room.placeGomokStone(7, 7, host))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("게임 진행 중에만 착수할 수 있습니다");
@@ -149,7 +147,8 @@ class RoomTest {
         room.join(guest);
         room.startGomok();
 
-        Stone result = room.placeGomokStone(7, 7, host);
+        room.placeGomokStone(7, 7, host);
+        Stone result = room.getWinner(host);
 
         assertThat(result).isEqualTo(Stone.EMPTY); // 아직 승자 없음
         assertThat(room.getGomok().getGrid()[7][7]).isEqualTo(Stone.BLACK);
@@ -175,7 +174,8 @@ class RoomTest {
         room.placeGomokStone(8, 6, guest);
 
         // 마지막 착수로 5목 완성
-        Stone winner = room.placeGomokStone(7, 7, host);
+        room.placeGomokStone(7, 7, host);
+        Stone winner = room.getWinner(host);
 
         assertThat(winner).isEqualTo(Stone.BLACK);
     }
@@ -185,11 +185,17 @@ class RoomTest {
         room.join(guest);
         room.startGomok();
 
-        for (int col = 3; col <= 6; col++) {
-            room.placeGomokStone(7, col, host);
-        }
+        room.placeGomokStone(7, 3, host);
+        room.placeGomokStone(8, 3, guest);
+        room.placeGomokStone(7, 4, host);
+        room.placeGomokStone(8, 4, guest);
+        room.placeGomokStone(7, 5, host);
+        room.placeGomokStone(8, 5, guest);
+        room.placeGomokStone(7, 6, host);
+        room.placeGomokStone(8, 6, guest);
 
-        Stone winner = room.placeGomokStone(8, 8, host);
+        room.placeGomokStone(8, 8, host);
+        Stone winner = room.getWinner(host);
 
         assertThat(winner).isEqualTo(Stone.EMPTY);
     }
