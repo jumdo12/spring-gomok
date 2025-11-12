@@ -14,9 +14,6 @@ public class Participant {
     }
 
     public void switchStone() {
-        if (stone == Stone.EMPTY) {
-            return;
-        }
-        stone = (stone == Stone.BLACK) ? Stone.WHITE : Stone.BLACK;
+        this.stone = this.stone.opposite();
     }
 }

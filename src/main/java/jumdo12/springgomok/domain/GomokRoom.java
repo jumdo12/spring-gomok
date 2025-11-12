@@ -3,7 +3,6 @@ package jumdo12.springgomok.domain;
 import lombok.Getter;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Getter
@@ -58,7 +57,7 @@ public class GomokRoom {
         gomokRoomStatus = GomokRoomStatus.PLAYING;
     }
 
-    public void switchParticipantsStone(User user) {
+    public void switchParticipantsStone() {
         for (Participant participant : participants) {
             participant.switchStone();
         }
@@ -86,9 +85,19 @@ public class GomokRoom {
 
         Participant participant = getParticipant(user);
 
+        if(participant.getStone() != gomok.getCurrTurn()) {
+            throw new IllegalArgumentException("상대방의 차례입니다.");
+        }
+
         gomok.placeStone(row, col, participant.getStone());
 
-        return gomok.calcWinner(row, col);
+        Stone winner = gomok.calcWinner(row, col);
+
+        if(winner != Stone.EMPTY) {
+            gomokRoomStatus = GomokRoomStatus.FINISHED;
+        }
+
+        return winner;
     }
 
     private Stone getAvailableStone() {

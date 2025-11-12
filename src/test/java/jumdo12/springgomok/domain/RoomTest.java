@@ -74,11 +74,11 @@ class RoomTest {
     }
 
     @Test
-    void 방장이_색을_바꾸면_둘의_색이_서로_바뀐다() {
+    void 색을_바꾸면_둘의_색이_서로_바뀐다() {
         GomokRoom room = GomokRoom.create(1L, "테스트방", host);
         room.join(guest);
 
-        room.switchParticipantsStone(host);
+        room.switchParticipantsStone();
 
         Participant hostP = room.getParticipants().stream()
                 .filter(p -> p.getUser().equals(host))
@@ -158,19 +158,23 @@ class RoomTest {
     @Test
     void 착수_후_5목을_완성하면_승자를_반환한다() {
         room.join(guest);
+        room.startGomok();
 
-        try {
-            java.lang.reflect.Field statusField = GomokRoom.class.getDeclaredField("gomokRoomStatus");
-            statusField.setAccessible(true);
-            statusField.set(room, GomokRoomStatus.PLAYING);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // host(BLACK)가 가로로 5목을 만들기 위해 (7,3)~(7,7)에 착수
+        // guest(WHITE)는 그 사이에 다른 위치에 착수
+        room.placeGomokStone(7, 3, host);
+        room.placeGomokStone(8, 3, guest);
 
-        for (int col = 3; col <= 6; col++) {
-            room.placeGomokStone(7, col, host);
-        }
+        room.placeGomokStone(7, 4, host);
+        room.placeGomokStone(8, 4, guest);
 
+        room.placeGomokStone(7, 5, host);
+        room.placeGomokStone(8, 5, guest);
+
+        room.placeGomokStone(7, 6, host);
+        room.placeGomokStone(8, 6, guest);
+
+        // 마지막 착수로 5목 완성
         Stone winner = room.placeGomokStone(7, 7, host);
 
         assertThat(winner).isEqualTo(Stone.BLACK);
@@ -179,14 +183,7 @@ class RoomTest {
     @Test
     void 착수_후_5목이_아니면_EMPTY를_반환한다() {
         room.join(guest);
-
-        try {
-            java.lang.reflect.Field statusField = GomokRoom.class.getDeclaredField("gomokRoomStatus");
-            statusField.setAccessible(true);
-            statusField.set(room, GomokRoomStatus.PLAYING);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        room.startGomok();
 
         for (int col = 3; col <= 6; col++) {
             room.placeGomokStone(7, col, host);
@@ -195,5 +192,17 @@ class RoomTest {
         Stone winner = room.placeGomokStone(8, 8, host);
 
         assertThat(winner).isEqualTo(Stone.EMPTY);
+    }
+
+    @Test
+    void 상대방_차례에_착수하면_예외가_발생한다() {
+        room.join(guest);
+        room.startGomok();
+
+        room.placeGomokStone(7, 7, host);
+
+        assertThatThrownBy(() -> room.placeGomokStone(8, 8, host))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("상대방의 차례입니다");
     }
 }

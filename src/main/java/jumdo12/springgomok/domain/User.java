@@ -29,6 +29,8 @@ public class User {
 
     private User (String nickname, String userId, String password) {
         this.nickname = nickname;
+        this.userId = userId;
+        this.password = password;
     }
 
     public static User create (String nickname, String userId, String password) {

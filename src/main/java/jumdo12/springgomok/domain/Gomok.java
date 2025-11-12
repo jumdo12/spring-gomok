@@ -31,6 +31,7 @@ public class Gomok {
     public void placeStone(int row, int col, Stone stone) {
         validateBound(row, col);
         validatePosition(row, col);
+        validateTurn(stone);
 
         grid[row][col] = stone;
 
