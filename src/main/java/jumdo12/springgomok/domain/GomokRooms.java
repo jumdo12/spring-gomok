@@ -36,9 +36,9 @@ public class GomokRooms {
     public void leaveRoom(Long roomId, User user) {
         GomokRoom room = getRoom(roomId);
 
-        if(room.isHost(user)) {
+        if((room.isHost(user) && room.getGomokRoomStatus() != GomokRoomStatus.FINISHED)
+                || (room.getParticipantCount() == 1)) {
             gomokRooms.remove(roomId);
-
             return;
         }
 

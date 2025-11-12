@@ -111,6 +111,10 @@ public class GomokRoom {
         return winner;
     }
 
+    public int getParticipantCount() {
+        return participants.size();
+    }
+
     private Stone getAvailableStone() {
         boolean blackUsed = participants.stream()
                 .anyMatch(p -> p.getStone() == Stone.BLACK);
