@@ -57,7 +57,7 @@ public class GomokRoomService {
         return gomokRoom.getWinner(user);
     }
 
-    private GomokRoom findRoom(Long roomId) {
+    public GomokRoom findRoom(Long roomId) {
         return gomokRooms.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방 입니다."));
     }
