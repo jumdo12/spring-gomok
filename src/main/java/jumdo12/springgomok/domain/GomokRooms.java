@@ -59,6 +59,12 @@ public class GomokRooms {
         room.startGomok(user);
     }
 
+    public List<GomokRoom> getWaitingRooms() {
+        return gomokRooms.values().stream()
+                .filter(gomokRoom -> gomokRoom.getGomokRoomStatus() == GomokRoomStatus.WAITING)
+                .toList();
+    }
+
     public List<GomokRoom> findAll() {
         return gomokRooms.values().stream().toList();
     }
