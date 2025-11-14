@@ -1,5 +1,7 @@
 package jumdo12.springgomok.presentation;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jumdo12.springgomok.application.GomokRoomService;
 import jumdo12.springgomok.application.UserService;
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
+@Tag(name = "게임방", description = "게임방 관리 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/rooms")
@@ -28,6 +31,7 @@ public class GomokRoomController {
     private final SseEmitters sseEmitters;
     private final UserService userService;
 
+    @Operation(summary = "게임방 생성")
     @PostMapping
     public ResponseEntity<GameRoomInfo> createRoom(
             @RequestBody RoomCreateRequest roomCreateRequest,
@@ -39,6 +43,7 @@ public class GomokRoomController {
         return ResponseEntity.ok(roomInfo);
     }
 
+    @Operation(summary = "게임방 정보 조회")
     @GetMapping("/{roomId}")
     public ResponseEntity<GameRoomDetailInfo> getRoomInfo(
             @PathVariable Long roomId,
@@ -47,11 +52,13 @@ public class GomokRoomController {
         return ResponseEntity.ok(gameDetailInfo);
     }
 
+    @Operation(summary = "대기중인 게임방 목록 조회")
     @GetMapping("/waitings")
     public ResponseEntity<List<GameRoomInfo>> getWaitingRooms() {
         return ResponseEntity.ok(gomokRoomService.getWaitingRooms());
     }
 
+    @Operation(summary = "게임방 이벤트 구독")
     @GetMapping("/{roomId}/subscribe")
     public SseEmitter subscribe(
             @PathVariable Long roomId,
@@ -60,6 +67,7 @@ public class GomokRoomController {
         return sseEmitters.add(roomId, loginUser.id());
     }
 
+    @Operation(summary = "게임방 입장")
     @PostMapping("/{roomId}/join")
     public ResponseEntity<GameRoomDetailInfo> joinRoom(
             @PathVariable Long roomId,
@@ -73,6 +81,7 @@ public class GomokRoomController {
         return ResponseEntity.ok(roomInfo);
     }
 
+    @Operation(summary = "게임방 퇴장")
     @PostMapping("/{roomId}/leave")
     public ResponseEntity<Void> leaveRoom(
             @PathVariable Long roomId,
@@ -86,6 +95,7 @@ public class GomokRoomController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "게임 시작")
     @PostMapping("/{roomId}/start")
     public ResponseEntity<Void> startGame(
             @PathVariable Long roomId,

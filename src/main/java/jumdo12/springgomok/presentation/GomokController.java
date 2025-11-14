@@ -1,5 +1,7 @@
 package jumdo12.springgomok.presentation;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jumdo12.springgomok.application.GomokRoomService;
 import jumdo12.springgomok.application.GomokService;
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "오목 게임", description = "오목 게임 진행 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/game")
@@ -23,6 +26,7 @@ public class GomokController {
     private final GomokRoomService gomokRoomService;
     private final SseEmitters sseEmitters;
 
+    @Operation(summary = "돌 놓기")
     @PostMapping("/{roomId}/place")
     public ResponseEntity<PlaceResponse> placeGomok(
             @PathVariable Long roomId,
