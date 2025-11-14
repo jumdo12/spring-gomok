@@ -7,6 +7,7 @@ import jumdo12.springgomok.application.dto.GameRoomInfo;
 import jumdo12.springgomok.domain.GomokRoom;
 import jumdo12.springgomok.domain.User;
 import jumdo12.springgomok.infra.sse.SseEmitters;
+import jumdo12.springgomok.presentation.dto.RoomCreateRequest;
 import jumdo12.springgomok.presentation.dto.RoomUpdateEvent;
 import jumdo12.springgomok.presentation.resolver.AuthUser;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
@@ -26,6 +27,17 @@ public class GomokRoomController {
     private final GomokRoomService gomokRoomService;
     private final SseEmitters sseEmitters;
     private final UserService userService;
+
+    @PostMapping
+    public ResponseEntity<GameRoomInfo> createRoom(
+            @RequestBody RoomCreateRequest roomCreateRequest,
+            @AuthUser LoginUser loginUser) {
+        GomokRoom room = gomokRoomService.createRoom(roomCreateRequest.roomName(), loginUser);
+
+        GameRoomInfo roomInfo = GameRoomInfo.from(room);
+
+        return ResponseEntity.ok(roomInfo);
+    }
 
     @GetMapping("/{roomId}")
     public ResponseEntity<GameRoomDetailInfo> getRoomInfo(

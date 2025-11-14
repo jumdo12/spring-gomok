@@ -16,6 +16,12 @@ public class GomokRoomService {
     private final GomokRooms gomokRooms;
     private final UserRepository userRepository;
 
+    public GomokRoom createRoom(String roomName, LoginUser loginUser) {
+        User user = findUser(loginUser.id());
+
+        return gomokRooms.createRoom(roomName, user);
+    }
+
     public void joinRoom(Long roomId, LoginUser loginUser) {
         User user = findUser(loginUser.id());
 
