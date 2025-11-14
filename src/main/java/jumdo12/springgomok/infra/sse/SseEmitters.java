@@ -34,7 +34,10 @@ public class SseEmitters {
     public void sendRoomUpdate(Long roomId, Long userId, Object data) {
         SseEmitter emitter = getEmitter(roomId, userId);
         if (emitter != null) {
+            System.out.println("📨 SSE 메시지 전송 성공: roomId=" + roomId + ", userId=" + userId);
             send(emitter, "room-update", data);
+        } else {
+            System.out.println("⚠️ SSE Emitter 없음: roomId=" + roomId + ", userId=" + userId);
         }
     }
 

@@ -1,0 +1,602 @@
+// 상수
+const BOARD_SIZE = 19;
+const CELL_SIZE = 30;
+const STONE_RADIUS = 13;
+
+// DOM 요소
+const waitingScreen = document.getElementById('waitingScreen');
+const readyScreen = document.getElementById('readyScreen');
+const playingScreen = document.getElementById('playingScreen');
+const finishedScreen = document.getElementById('finishedScreen');
+
+const roomNameWaiting = document.getElementById('roomNameWaiting');
+const roomNameReady = document.getElementById('roomNameReady');
+const roomNamePlaying = document.getElementById('roomNamePlaying');
+const blackPlayerName = document.getElementById('blackPlayerName');
+const whitePlayerName = document.getElementById('whitePlayerName');
+const turnIndicator = document.getElementById('turnIndicator');
+const resultMessage = document.getElementById('resultMessage');
+const winnerInfo = document.getElementById('winnerInfo');
+
+const switchStoneBtn = document.getElementById('switchStoneBtn');
+const startGameBtn = document.getElementById('startGameBtn');
+const leaveBtn1 = document.getElementById('leaveBtn1');
+const leaveBtn2 = document.getElementById('leaveBtn2');
+const leaveBtn3 = document.getElementById('leaveBtn3');
+const backToListBtn = document.getElementById('backToListBtn');
+
+const canvas = document.getElementById('gameBoard');
+const ctx = canvas.getContext('2d');
+
+const waitingCanvas = document.getElementById('waitingBoard');
+const waitingCtx = waitingCanvas.getContext('2d');
+const myStoneWaiting = document.getElementById('myStoneWaiting');
+
+const readyCanvas = document.getElementById('readyBoard');
+const readyCtx = readyCanvas.getContext('2d');
+const myStoneReady = document.getElementById('myStoneReady');
+const myNameReady = document.getElementById('myNameReady');
+const opponentStoneReady = document.getElementById('opponentStoneReady');
+const opponentNameReady = document.getElementById('opponentNameReady');
+
+const errorModal = document.getElementById('errorModal');
+const errorMessage = document.getElementById('errorMessage');
+const closeModalBtn = document.getElementById('closeModalBtn');
+
+// 게임 상태
+let roomId = null;
+let roomInfo = null;
+let eventSource = null;
+let board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill('EMPTY'));
+let myStone = null;
+let opponentStone = null;
+let currentTurn = 'BLACK';
+let gameStatus = null;
+let isHost = false;
+let totalMoves = 0;
+
+// 에러 모달 표시
+function showError(message) {
+    errorMessage.textContent = message;
+    errorModal.style.display = 'flex';
+}
+
+// 에러 모달 닫기
+function closeModal() {
+    errorModal.style.display = 'none';
+}
+
+// 로그인 페이지로 리다이렉트
+function redirectToLogin() {
+    window.location.href = '/login.html';
+}
+
+// 방 목록으로 이동
+function goToRoomList() {
+    window.location.href = '/room-list.html';
+}
+
+// 방 정보 조회
+async function loadRoomInfo() {
+    try {
+        const response = await fetch(`/api/rooms/${roomId}`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            redirectToLogin();
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: '방 정보를 불러올 수 없습니다.' }));
+            throw new Error(errorData.message || '방 정보를 불러올 수 없습니다.');
+        }
+
+        roomInfo = await response.json();
+        console.log('📋 방 정보:', roomInfo);
+        console.log('👤 내 ID:', roomInfo.myId);
+        console.log('👑 방장 여부:', roomInfo.isHost);
+        console.log('🎲 내 돌:', roomInfo.myStone);
+        console.log('👥 상대방:', roomInfo.opponentName);
+
+        // SSE 구독 시작 (최초 한 번만)
+        if (!eventSource) {
+            subscribeToEvents();
+        }
+
+        // 게임 상태에 따라 화면 렌더링
+        myStone = roomInfo.myStone;
+        opponentStone = myStone === 'BLACK' ? 'WHITE' : 'BLACK';
+        isHost = roomInfo.isHost;
+
+        switch (roomInfo.gameStatus) {
+            case 'WAITING':
+                renderWaitingScreen();
+                break;
+            case 'READY':
+                renderReadyScreen();
+                break;
+            case 'PLAYING':
+                renderPlayingScreen();
+                break;
+            case 'FINISHED':
+                // 게임 종료 상태는 서버에서 winner 정보가 필요
+                renderFinishedScreen(null);
+                break;
+        }
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+// SSE 이벤트 구독
+function subscribeToEvents() {
+    console.log(`SSE 구독 시작: /api/rooms/${roomId}/subscribe`);
+
+    eventSource = new EventSource(`/api/rooms/${roomId}/subscribe`, {
+        withCredentials: true
+    });
+
+    eventSource.onopen = () => {
+        console.log('SSE 연결 성공!');
+    };
+
+    eventSource.addEventListener('room-update', (event) => {
+        const data = JSON.parse(event.data);
+        console.log('✅ Room Update Event 수신:', data);
+        handleRoomUpdateEvent(data);
+    });
+
+    eventSource.addEventListener('move', (event) => {
+        const data = JSON.parse(event.data);
+        console.log('✅ Move Event 수신:', data);
+        handleMoveEvent(data);
+    });
+
+    eventSource.onerror = (error) => {
+        console.error('❌ SSE Error:', error);
+        console.log('SSE readyState:', eventSource.readyState);
+        if (eventSource.readyState === EventSource.CLOSED) {
+            console.log('SSE connection closed');
+        }
+    };
+}
+
+// RoomUpdateEvent 처리
+function handleRoomUpdateEvent(data) {
+    console.log('🔄 Room Update Event 처리:', data.type);
+
+    switch (data.type) {
+        case 'PARTICIPANT_JOINED':
+        case 'GAME_STARTED':
+        case 'STONE_SWITCHED':
+            // 방 정보 다시 조회 (자동으로 올바른 화면으로 전환됨)
+            console.log('방 정보 다시 조회 시작...');
+            loadRoomInfo();
+            break;
+        case 'PARTICIPANT_LEFT':
+            // 상대방이 나갔으면 방 목록으로 이동
+            console.log('상대방이 퇴장했습니다. 방 목록으로 이동합니다.');
+            alert('상대방이 방을 나갔습니다.');
+            goToRoomList();
+            break;
+        default:
+            console.warn('알 수 없는 이벤트 타입:', data.type);
+    }
+}
+
+// MoveEvent 처리
+function handleMoveEvent(data) {
+    // 상대방 착수
+    board[data.row][data.col] = opponentStone;
+    totalMoves++;
+    currentTurn = currentTurn === 'BLACK' ? 'WHITE' : 'BLACK';
+
+    drawBoard();
+    updateTurnIndicator();
+
+    // 게임 종료 확인
+    if (data.gameStatus === 'FINISHED') {
+        gameStatus = 'FINISHED';
+        renderFinishedScreen(data.winner);
+    }
+}
+
+// 대기 화면 렌더링
+function renderWaitingScreen() {
+    gameStatus = 'WAITING';
+    hideAllScreens();
+    waitingScreen.style.display = 'block';
+    roomNameWaiting.textContent = roomInfo.roomName || '방 이름';
+
+    // 내 돌 색깔 표시
+    if (roomInfo.myStone === 'BLACK') {
+        myStoneWaiting.textContent = '●';
+        myStoneWaiting.style.color = '#000';
+    } else {
+        myStoneWaiting.textContent = '○';
+        myStoneWaiting.style.color = '#666';
+    }
+
+    // 대기 화면 오목판 그리기
+    drawEmptyBoard(waitingCtx, waitingCanvas.width, waitingCanvas.height, 20);
+}
+
+// 준비 화면 렌더링
+function renderReadyScreen() {
+    console.log('🎮 준비 화면 렌더링');
+    console.log('👑 방장:', roomInfo.isHost ? 'YES' : 'NO');
+
+    gameStatus = 'READY';
+    hideAllScreens();
+    readyScreen.style.display = 'block';
+    roomNameReady.textContent = roomInfo.roomName || '방 이름';
+
+    // 왼쪽: 나
+    myNameReady.textContent = '나';
+    if (roomInfo.myStone === 'BLACK') {
+        myStoneReady.textContent = '●';
+        myStoneReady.style.color = '#000';
+    } else {
+        myStoneReady.textContent = '○';
+        myStoneReady.style.color = '#666';
+    }
+
+    // 오른쪽: 상대방
+    if (roomInfo.opponentId && roomInfo.opponentName) {
+        opponentNameReady.textContent = roomInfo.opponentName;
+        if (roomInfo.myStone === 'BLACK') {
+            opponentStoneReady.textContent = '○';
+            opponentStoneReady.style.color = '#666';
+        } else {
+            opponentStoneReady.textContent = '●';
+            opponentStoneReady.style.color = '#000';
+        }
+    }
+
+    // 방장만 버튼 표시
+    console.log('🔘 버튼 표시:', roomInfo.isHost ? '방장 버튼 보임' : '버튼 숨김');
+    if (roomInfo.isHost) {
+        switchStoneBtn.style.display = 'inline-block';
+        startGameBtn.style.display = 'inline-block';
+    } else {
+        switchStoneBtn.style.display = 'none';
+        startGameBtn.style.display = 'none';
+    }
+
+    // 준비 화면 오목판 그리기
+    drawEmptyBoard(readyCtx, readyCanvas.width, readyCanvas.height, 20);
+}
+
+// 게임 화면 렌더링
+function renderPlayingScreen() {
+    gameStatus = 'PLAYING';
+    hideAllScreens();
+    playingScreen.style.display = 'block';
+    roomNamePlaying.textContent = roomInfo.roomName || '방 이름';
+
+    // 보드 초기화 및 그리기 (최초 진입 시만)
+    if (totalMoves === 0) {
+        board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill('EMPTY'));
+        currentTurn = 'BLACK';
+    }
+
+    drawBoard();
+    updateTurnIndicator();
+}
+
+// 게임 종료 화면 렌더링
+function renderFinishedScreen(winner) {
+    hideAllScreens();
+    finishedScreen.style.display = 'block';
+
+    if (winner === myStone) {
+        resultMessage.textContent = '승리했습니다!';
+        resultMessage.style.color = '#27ae60';
+    } else if (winner === opponentStone) {
+        resultMessage.textContent = '패배했습니다!';
+        resultMessage.style.color = '#e74c3c';
+    } else {
+        resultMessage.textContent = '무승부입니다!';
+        resultMessage.style.color = '#95a5a6';
+    }
+
+    winnerInfo.textContent = winner === 'BLACK' ? '흑돌 승리' : '백돌 승리';
+}
+
+// 모든 화면 숨기기
+function hideAllScreens() {
+    waitingScreen.style.display = 'none';
+    readyScreen.style.display = 'none';
+    playingScreen.style.display = 'none';
+    finishedScreen.style.display = 'none';
+}
+
+// 빈 오목판 그리기 (대기 화면용)
+function drawEmptyBoard(context, width, height, cellSize) {
+    const boardSize = 19;
+
+    // 배경
+    context.fillStyle = '#deb887';
+    context.fillRect(0, 0, width, height);
+
+    // 격자선
+    context.strokeStyle = '#000';
+    context.lineWidth = 1;
+
+    for (let i = 0; i < boardSize; i++) {
+        // 세로선
+        context.beginPath();
+        context.moveTo(cellSize * (i + 0.5), cellSize * 0.5);
+        context.lineTo(cellSize * (i + 0.5), cellSize * (boardSize - 0.5));
+        context.stroke();
+
+        // 가로선
+        context.beginPath();
+        context.moveTo(cellSize * 0.5, cellSize * (i + 0.5));
+        context.lineTo(cellSize * (boardSize - 0.5), cellSize * (i + 0.5));
+        context.stroke();
+    }
+
+    // 화점
+    const starPoints = [
+        [3, 3], [3, 9], [3, 15],
+        [9, 3], [9, 9], [9, 15],
+        [15, 3], [15, 9], [15, 15]
+    ];
+
+    context.fillStyle = '#000';
+    starPoints.forEach(([row, col]) => {
+        context.beginPath();
+        context.arc(cellSize * (col + 0.5), cellSize * (row + 0.5), 2, 0, 2 * Math.PI);
+        context.fill();
+    });
+}
+
+// 오목판 그리기
+function drawBoard() {
+    // 배경
+    ctx.fillStyle = '#deb887';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 격자선
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        // 세로선
+        ctx.beginPath();
+        ctx.moveTo(CELL_SIZE * (i + 0.5), CELL_SIZE * 0.5);
+        ctx.lineTo(CELL_SIZE * (i + 0.5), CELL_SIZE * (BOARD_SIZE - 0.5));
+        ctx.stroke();
+
+        // 가로선
+        ctx.beginPath();
+        ctx.moveTo(CELL_SIZE * 0.5, CELL_SIZE * (i + 0.5));
+        ctx.lineTo(CELL_SIZE * (BOARD_SIZE - 0.5), CELL_SIZE * (i + 0.5));
+        ctx.stroke();
+    }
+
+    // 화점 (5개: 중앙, 4개 모서리 근처)
+    const starPoints = [
+        [3, 3], [3, 9], [3, 15],
+        [9, 3], [9, 9], [9, 15],
+        [15, 3], [15, 9], [15, 15]
+    ];
+
+    ctx.fillStyle = '#000';
+    starPoints.forEach(([row, col]) => {
+        ctx.beginPath();
+        ctx.arc(CELL_SIZE * (col + 0.5), CELL_SIZE * (row + 0.5), 3, 0, 2 * Math.PI);
+        ctx.fill();
+    });
+
+    // 돌 그리기
+    for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+            if (board[row][col] === 'BLACK') {
+                drawStone(row, col, 'BLACK');
+            } else if (board[row][col] === 'WHITE') {
+                drawStone(row, col, 'WHITE');
+            }
+        }
+    }
+}
+
+// 돌 그리기
+function drawStone(row, col, color) {
+    const x = CELL_SIZE * (col + 0.5);
+    const y = CELL_SIZE * (row + 0.5);
+
+    ctx.beginPath();
+    ctx.arc(x, y, STONE_RADIUS, 0, 2 * Math.PI);
+
+    if (color === 'BLACK') {
+        ctx.fillStyle = '#000';
+        ctx.fill();
+    } else {
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+}
+
+// 턴 표시 업데이트
+function updateTurnIndicator() {
+    if (currentTurn === myStone) {
+        turnIndicator.textContent = '내 차례입니다';
+        turnIndicator.style.color = '#27ae60';
+    } else {
+        turnIndicator.textContent = '상대방 차례입니다';
+        turnIndicator.style.color = '#95a5a6';
+    }
+}
+
+// 캔버스 클릭 이벤트 (돌 놓기)
+canvas.addEventListener('click', async (event) => {
+    if (gameStatus !== 'PLAYING') return;
+    if (currentTurn !== myStone) {
+        showError('상대방의 차례입니다.');
+        return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const col = Math.round(x / CELL_SIZE - 0.5);
+    const row = Math.round(y / CELL_SIZE - 0.5);
+
+    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE) return;
+    if (board[row][col] !== 'EMPTY') {
+        showError('이미 돌이 놓여있습니다.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/game/${roomId}/place`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ row, col })
+        });
+
+        if (response.status === 401) {
+            redirectToLogin();
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: '착수에 실패했습니다.' }));
+            throw new Error(errorData.message || '착수에 실패했습니다.');
+        }
+
+        const data = await response.json();
+
+        // 내 착수 반영
+        board[row][col] = myStone;
+        totalMoves++;
+        currentTurn = currentTurn === 'BLACK' ? 'WHITE' : 'BLACK';
+
+        drawBoard();
+        updateTurnIndicator();
+
+        // 게임 종료 확인
+        if (data.gameStatus === 'FINISHED') {
+            gameStatus = 'FINISHED';
+            renderFinishedScreen(data.winner);
+        }
+    } catch (error) {
+        showError(error.message);
+    }
+});
+
+// 돌 바꾸기
+async function switchStone() {
+    try {
+        const response = await fetch(`/api/rooms/${roomId}/switch-stone`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            redirectToLogin();
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: '돌 바꾸기에 실패했습니다.' }));
+            throw new Error(errorData.message || '돌 바꾸기에 실패했습니다.');
+        }
+
+        // 성공하면 방 정보 다시 조회 (화면 업데이트)
+        console.log('✅ 돌 바꾸기 성공 - 화면 업데이트');
+        await loadRoomInfo();
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+// 게임 시작
+async function startGame() {
+    try {
+        const response = await fetch(`/api/rooms/${roomId}/start`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        if (response.status === 401) {
+            redirectToLogin();
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: '게임 시작에 실패했습니다.' }));
+            throw new Error(errorData.message || '게임 시작에 실패했습니다.');
+        }
+
+        // 성공하면 방 정보 다시 조회 (화면 업데이트)
+        console.log('✅ 게임 시작 - 화면 업데이트');
+        await loadRoomInfo();
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+// 방 나가기
+async function leaveRoom() {
+    try {
+        const response = await fetch(`/api/rooms/${roomId}/leave`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        // 성공/실패 상관없이 방 목록으로
+        goToRoomList();
+    } catch (error) {
+        goToRoomList();
+    }
+}
+
+// 이벤트 리스너
+switchStoneBtn.addEventListener('click', switchStone);
+startGameBtn.addEventListener('click', startGame);
+leaveBtn1.addEventListener('click', leaveRoom);
+leaveBtn2.addEventListener('click', leaveRoom);
+leaveBtn3.addEventListener('click', leaveRoom);
+backToListBtn.addEventListener('click', goToRoomList);
+closeModalBtn.addEventListener('click', closeModal);
+
+// 모달 외부 클릭 시 닫기
+errorModal.addEventListener('click', (event) => {
+    if (event.target === errorModal) {
+        closeModal();
+    }
+});
+
+// 페이지 언로드 시 SSE 종료
+window.addEventListener('beforeunload', () => {
+    if (eventSource) {
+        eventSource.close();
+    }
+});
+
+// 초기화
+(function init() {
+    const urlParams = new URLSearchParams(window.location.search);
+    roomId = urlParams.get('roomId');
+
+    if (!roomId) {
+        showError('방 ID가 없습니다.');
+        setTimeout(goToRoomList, 2000);
+        return;
+    }
+
+    loadRoomInfo();
+})();

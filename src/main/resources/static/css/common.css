@@ -1,0 +1,506 @@
+/* 전역 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+/* 로그인 박스 */
+.login-box {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 20vh;
+}
+
+.login-box h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+
+/* 폼 그룹 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* 버튼 */
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+/* 모달 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3 {
+    color: #e74c3c;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.modal-content p {
+    color: #555;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+/* 방 목록 페이지 */
+.room-list-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.header h1 {
+    color: #333;
+    font-size: 28px;
+    margin: 0;
+}
+
+.btn-logout {
+    width: auto;
+    padding: 10px 20px;
+    background: #e74c3c;
+    color: white;
+    margin: 0;
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.controls .btn {
+    width: auto;
+    flex: 1;
+    margin: 0;
+}
+
+.rooms-section h2 {
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.rooms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.room-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s;
+}
+
+.room-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.room-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.room-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+}
+
+.room-participants {
+    color: #666;
+    font-size: 14px;
+    background: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+.btn-join {
+    width: auto;
+    padding: 8px 24px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 16px;
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+    .login-box {
+        padding: 30px 20px;
+    }
+
+    .login-box h1 {
+        font-size: 24px;
+    }
+
+    .room-list-container {
+        padding: 20px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .btn-logout {
+        width: 100%;
+    }
+
+    .controls {
+        flex-direction: column;
+    }
+
+    .room-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .room-info {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .btn-join {
+        width: 100%;
+    }
+}
+
+/* 게임 화면 */
+.game-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 700px;
+    margin: 20px auto;
+}
+
+.screen {
+    min-height: 400px;
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.game-header h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.turn-indicator {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.game-footer {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.game-footer .btn {
+    width: auto;
+    margin: 0;
+    padding: 10px 30px;
+}
+
+/* 대기 화면 */
+.waiting-game-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.player-side {
+    flex: 0 0 150px;
+}
+
+.player-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 3px solid #667eea;
+}
+
+.player-card.empty {
+    border: 3px dashed #ddd;
+    opacity: 0.6;
+}
+
+.stone-display {
+    font-size: 60px;
+    line-height: 1;
+}
+
+.player-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.center-board {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#waitingBoard {
+    border: 2px solid #333;
+    border-radius: 4px;
+}
+
+/* 준비 화면 */
+.ready-game-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+#readyBoard {
+    border: 2px solid #333;
+    border-radius: 4px;
+}
+
+/* 게임 보드 */
+.board-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+#gameBoard {
+    cursor: pointer;
+    border: 2px solid #333;
+    border-radius: 4px;
+}
+
+/* 게임 종료 화면 */
+.result-content {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.result-content h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+#winnerInfo {
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* 반응형 - 게임 화면 */
+@media (max-width: 768px) {
+    .game-container {
+        padding: 20px;
+        margin: 10px;
+    }
+
+    #gameBoard {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .game-header h2 {
+        font-size: 20px;
+    }
+
+    .turn-indicator {
+        font-size: 16px;
+    }
+
+    .waiting-game-layout {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .player-side {
+        flex: 1;
+        width: 100%;
+    }
+
+    .center-board {
+        order: -1;
+    }
+
+    #waitingBoard {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .ready-game-layout {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    #readyBoard {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .result-content h1 {
+        font-size: 28px;
+    }
+
+    .game-footer {
+        flex-direction: column;
+    }
+
+    .game-footer .btn {
+        width: 100%;
+    }
+}

@@ -51,4 +51,5 @@ public class GomokController {
                 room.getWinner()
         ));
     }
+
 }

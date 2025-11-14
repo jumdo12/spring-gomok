@@ -17,13 +17,12 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final UserRepository userRepository;
     private final SessionProvider sessionProvider;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(AuthUser.class)
-                && User.class.isAssignableFrom(parameter.getParameterType());
+                && LoginUser.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
@@ -39,7 +38,6 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         Long userId = sessionProvider.getUserIdSession(session)
                 .orElseThrow(() -> new IllegalArgumentException("로그인이 필요합니다."));
 
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        return new LoginUser(userId);
     }
 }

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게임 - 오목 게임</title>
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- 대기 화면 -->
+        <div id="waitingScreen" class="screen" style="display: none;">
+            <div class="game-header">
+                <h2 id="roomNameWaiting"></h2>
+            </div>
+            <div class="waiting-game-layout">
+                <div class="player-side left-side">
+                    <div class="player-card">
+                        <div class="stone-display" id="myStoneWaiting">●</div>
+                        <div class="player-name">나</div>
+                    </div>
+                </div>
+                <div class="center-board">
+                    <canvas id="waitingBoard" width="380" height="380"></canvas>
+                </div>
+                <div class="player-side right-side">
+                    <div class="player-card empty">
+                        <div class="stone-display">○</div>
+                        <div class="player-name">?</div>
+                    </div>
+                </div>
+            </div>
+            <div class="game-footer">
+                <button id="leaveBtn1" class="btn btn-secondary">방 나가기</button>
+            </div>
+        </div>
+
+        <!-- 준비 화면 -->
+        <div id="readyScreen" class="screen" style="display: none;">
+            <div class="game-header">
+                <h2 id="roomNameReady"></h2>
+            </div>
+            <div class="ready-game-layout">
+                <div class="player-side left-side">
+                    <div class="player-card">
+                        <div class="stone-display" id="myStoneReady">●</div>
+                        <div class="player-name" id="myNameReady">나</div>
+                    </div>
+                </div>
+                <div class="center-board">
+                    <canvas id="readyBoard" width="380" height="380"></canvas>
+                </div>
+                <div class="player-side right-side">
+                    <div class="player-card">
+                        <div class="stone-display" id="opponentStoneReady">○</div>
+                        <div class="player-name" id="opponentNameReady">상대방</div>
+                    </div>
+                </div>
+            </div>
+            <div class="game-footer">
+                <button id="switchStoneBtn" class="btn btn-secondary" style="display: none;">돌 바꾸기</button>
+                <button id="startGameBtn" class="btn btn-primary" style="display: none;">게임 시작</button>
+                <button id="leaveBtn2" class="btn btn-secondary">방 나가기</button>
+            </div>
+        </div>
+
+        <!-- 게임 화면 -->
+        <div id="playingScreen" class="screen" style="display: none;">
+            <div class="game-header">
+                <h2 id="roomNamePlaying"></h2>
+                <div id="turnIndicator" class="turn-indicator"></div>
+            </div>
+            <div class="board-container">
+                <canvas id="gameBoard" width="570" height="570"></canvas>
+            </div>
+            <div class="game-footer">
+                <button id="leaveBtn3" class="btn btn-secondary">방 나가기</button>
+            </div>
+        </div>
+
+        <!-- 게임 종료 화면 -->
+        <div id="finishedScreen" class="screen" style="display: none;">
+            <div class="result-content">
+                <h1 id="resultMessage"></h1>
+                <div id="winnerInfo"></div>
+            </div>
+            <div class="game-footer">
+                <button id="backToListBtn" class="btn btn-primary">방 목록으로</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 에러 모달 -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <h3>오류</h3>
+            <p id="errorMessage"></p>
+            <button id="closeModalBtn" class="btn btn-primary">확인</button>
+        </div>
+    </div>
+
+    <script src="/js/game.js"></script>
+</body>
+</html>

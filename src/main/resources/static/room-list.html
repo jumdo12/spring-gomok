@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방 목록 - 오목 게임</title>
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+    <div class="room-list-container">
+        <div class="header">
+            <h1>오목 게임</h1>
+            <button id="logoutBtn" class="btn btn-logout">로그아웃</button>
+        </div>
+
+        <div class="controls">
+            <button id="createRoomBtn" class="btn btn-primary">방 만들기</button>
+            <button id="refreshBtn" class="btn btn-secondary">새로고침</button>
+        </div>
+
+        <div class="rooms-section">
+            <h2>대기중인 방 목록</h2>
+            <div id="roomsList" class="rooms-list">
+                <!-- 방 목록이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 방 만들기 모달 -->
+    <div id="createRoomModal" class="modal">
+        <div class="modal-content">
+            <h3>방 만들기</h3>
+            <div class="form-group">
+                <label for="roomName">방 이름</label>
+                <input type="text" id="roomName" placeholder="방 이름을 입력하세요">
+            </div>
+            <button id="confirmCreateBtn" class="btn btn-primary">만들기</button>
+            <button id="cancelCreateBtn" class="btn btn-secondary">취소</button>
+        </div>
+    </div>
+
+    <!-- 에러 모달 -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <h3>오류</h3>
+            <p id="errorMessage"></p>
+            <button id="closeModalBtn" class="btn btn-primary">확인</button>
+        </div>
+    </div>
+
+    <script src="/js/room-list.js"></script>
+</body>
+</html>

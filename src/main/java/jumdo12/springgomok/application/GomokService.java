@@ -27,6 +27,21 @@ public class GomokService {
         gomokRoom.leave(user);
     }
 
+    public void switchStone(Long roomId, LoginUser loginUser) {
+        GomokRoom gomokRoom = findRoom(roomId);
+        User user = findUser(loginUser.id());
+
+        if (!gomokRoom.isHost(user)) {
+            throw new IllegalArgumentException("방장만 돌을 바꿀 수 있습니다.");
+        }
+
+        if (gomokRoom.getGomokRoomStatus() != GomokRoomStatus.READY) {
+            throw new IllegalArgumentException("준비 상태에서만 돌을 바꿀 수 있습니다.");
+        }
+
+        gomokRoom.switchParticipantsStone();
+    }
+
     private GomokRoom findRoom(Long roomId){
         return gomokRooms.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("방을 찾을 수 없습니다"));

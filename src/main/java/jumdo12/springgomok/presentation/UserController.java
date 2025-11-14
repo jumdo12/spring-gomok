@@ -10,11 +10,10 @@ import jumdo12.springgomok.presentation.dto.SignUpRequest;
 import jumdo12.springgomok.presentation.dto.LoginResponse;
 import jumdo12.springgomok.presentation.session.SessionProvider;
 import lombok.RequiredArgsConstructor;
+import jumdo12.springgomok.presentation.resolver.AuthUser;
+import jumdo12.springgomok.presentation.resolver.LoginUser;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "사용자", description = "사용자 인증 API")
 @RestController
@@ -54,5 +53,14 @@ public class UserController {
         sessionProvider.removeSession(httpSession);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "현재 로그인한 사용자 정보 조회")
+    @GetMapping("/me")
+    public ResponseEntity<LoginResponse> getCurrentUser(@AuthUser LoginUser loginUser) {
+        User user = userService.findUser(loginUser.id());
+        LoginResponse loginResponse = LoginResponse.from(user);
+
+        return ResponseEntity.ok(loginResponse);
     }
 }

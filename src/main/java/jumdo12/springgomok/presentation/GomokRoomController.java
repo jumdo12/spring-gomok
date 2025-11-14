@@ -3,6 +3,7 @@ package jumdo12.springgomok.presentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jumdo12.springgomok.application.GomokRoomService;
+import jumdo12.springgomok.application.GomokService;
 import jumdo12.springgomok.application.UserService;
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
 import jumdo12.springgomok.application.dto.GameRoomInfo;
@@ -28,6 +29,7 @@ import java.util.List;
 public class GomokRoomController {
 
     private final GomokRoomService gomokRoomService;
+    private final GomokService gomokService;
     private final SseEmitters sseEmitters;
     private final UserService userService;
 
@@ -106,6 +108,21 @@ public class GomokRoomController {
 
         sseEmitters.sendRoomUpdate(roomId, roomInfo.opponentId(),
                 new RoomUpdateEvent("GAME_STARTED", null));
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "돌 바꾸기")
+    @PostMapping("/{roomId}/switch-stone")
+    public ResponseEntity<Void> switchStone(
+            @PathVariable Long roomId,
+            @AuthUser LoginUser loginUser
+    ) {
+        gomokService.switchStone(roomId, loginUser);
+        GameRoomDetailInfo roomInfo = gomokRoomService.getGameDetailInfo(roomId, loginUser);
+
+        sseEmitters.sendRoomUpdate(roomId, roomInfo.opponentId(),
+                new RoomUpdateEvent("STONE_SWITCHED", null));
 
         return ResponseEntity.noContent().build();
     }
