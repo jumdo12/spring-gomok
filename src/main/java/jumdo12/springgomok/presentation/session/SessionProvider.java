@@ -12,7 +12,7 @@ public class SessionProvider {
     private final static String SESSION_USER_KEY = "USER_ID";
 
     public void createUserSession(HttpSession httpSession, User user) {
-        httpSession.setAttribute(SESSION_USER_KEY, user);
+        httpSession.setAttribute(SESSION_USER_KEY, user.getId());
     }
 
     public void removeSession(HttpSession httpSession) {
