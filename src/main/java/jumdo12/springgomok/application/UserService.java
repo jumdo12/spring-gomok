@@ -3,6 +3,7 @@ package jumdo12.springgomok.application;
 import jumdo12.springgomok.domain.User;
 import jumdo12.springgomok.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
