@@ -47,7 +47,7 @@ async function handleLogin() {
         console.log('로그인 성공:', data);
 
         // 로그인 성공 시 방 목록 페이지로 이동
-        window.location.href = '/room-list.html';
+        window.location.href = '/room-list';
     } catch (error) {
         showError(error.message);
     }
@@ -55,7 +55,7 @@ async function handleLogin() {
 
 // 회원가입 페이지로 이동
 function goToSignup() {
-    window.location.href = '/signup.html';
+    window.location.href = '/signup';
 }
 
 // 엔터 키로 로그인
@@ -90,7 +90,7 @@ async function checkSession() {
         if (response.ok) {
             // 이미 로그인되어 있음 → 방 목록으로 이동
             console.log('이미 로그인되어 있습니다. 방 목록으로 이동합니다.');
-            window.location.href = '/room-list.html';
+            window.location.href = '/room-list';
         } else {
             // 로그인 안되어 있음 → 로그인 화면 표시
             userIdInput.focus();

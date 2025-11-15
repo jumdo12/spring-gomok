@@ -68,12 +68,12 @@ function closeModal() {
 
 // 로그인 페이지로 리다이렉트
 function redirectToLogin() {
-    window.location.href = '/login.html';
+    window.location.href = '/login';
 }
 
 // 방 목록으로 이동
 function goToRoomList() {
-    window.location.href = '/room-list.html';
+    window.location.href = '/room-list';
 }
 
 // 방 정보 조회

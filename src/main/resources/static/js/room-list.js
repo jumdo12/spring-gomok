@@ -27,7 +27,7 @@ function closeModal() {
 
 // 로그인 페이지로 리다이렉트
 function redirectToLogin() {
-    window.location.href = '/login.html';
+    window.location.href = '/login';
 }
 
 // 방 목록 조회
@@ -131,7 +131,7 @@ async function createRoom() {
         console.log('방 생성 성공:', room);
 
         // 방 생성 성공 시 게임 페이지로 이동
-        window.location.href = `/game.html?roomId=${room.roomId}`;
+        window.location.href = `/game?roomId=${room.roomId}`;
     } catch (error) {
         showError(error.message);
     }
@@ -159,7 +159,7 @@ async function joinRoom(roomId) {
         console.log('방 입장 성공:', roomInfo);
 
         // 방 입장 성공 시 게임 페이지로 이동
-        window.location.href = `/game.html?roomId=${roomId}`;
+        window.location.href = `/game?roomId=${roomId}`;
     } catch (error) {
         showError(error.message);
     }
