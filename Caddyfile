@@ -1,0 +1,3 @@
+gomoku.jumdo12.cloud {
+    reverse_proxy gomok-server:8080
+}
