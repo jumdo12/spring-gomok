@@ -3,11 +3,13 @@ package jumdo12.springgomok.domain;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public class Gomok {
 
-    private static final int BOARD_SIZE = 15;
+    private static final int BOARD_SIZE = 18;
 
     private final Stone[][] grid;
 
@@ -31,7 +33,6 @@ public class Gomok {
     }
 
     public void placeStone(int row, int col, Stone stone) {
-        validateBound(row, col);
         validatePosition(row, col);
         validateTurn(stone);
 
@@ -41,6 +42,8 @@ public class Gomok {
     }
 
     private void validatePosition(int row, int col) {
+        validateBound(row, col);
+
         if(grid[row][col] != Stone.EMPTY) {
             throw new BusinessException(ErrorCode.INVALID_MOVE);
         }
@@ -97,6 +100,7 @@ public class Gomok {
 
     private void validateBound(int row, int col){
         if(isOutBound(row, col)) {
+            log.error("Move: row={}, col={}", row, col);
             throw new BusinessException(ErrorCode.INVALID_MOVE);
         }
     }
