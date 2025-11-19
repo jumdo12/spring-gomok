@@ -24,4 +24,5 @@ jobs:
       - name: Pull and restart
         run: |
           docker-compose pull
+          docker-compose down
           docker-compose up -d
