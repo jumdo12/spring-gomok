@@ -25,4 +25,9 @@ public class PageController {
     public String game() {
         return "game";
     }
+
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/login";
+    }
 }
