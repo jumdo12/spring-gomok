@@ -1,5 +1,7 @@
 package jumdo12.springgomok.application;
 
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.User;
 import jumdo12.springgomok.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,10 @@ public class UserService {
 
     public User findUser(String userId, String password) {
         User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
 
         if(!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         return user;
@@ -32,6 +34,6 @@ public class UserService {
 
     public User findUser(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }

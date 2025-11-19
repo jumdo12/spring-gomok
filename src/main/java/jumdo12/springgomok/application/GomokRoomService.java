@@ -2,6 +2,8 @@ package jumdo12.springgomok.application;
 
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
 import jumdo12.springgomok.application.dto.GameRoomInfo;
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
@@ -56,20 +58,13 @@ public class GomokRoomService {
                 .toList();
     }
 
-    public Stone getGomokWinner(Long roomId, LoginUser loginUser){
-        GomokRoom gomokRoom = findRoom(roomId);
-        User user = findUser(loginUser.id());
-
-        return gomokRoom.getWinner(user);
-    }
-
     public GomokRoom findRoom(Long roomId) {
         return gomokRooms.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방 입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
     }
 
     private User findUser(Long userId) {
         return userRepository.findById(userId).
-                orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }

@@ -1,5 +1,7 @@
 package jumdo12.springgomok.domain;
 
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -71,6 +73,6 @@ public class GomokRooms {
 
     private GomokRoom getRoom(Long id) {
         return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
     }
 }

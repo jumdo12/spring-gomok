@@ -1,5 +1,7 @@
 package jumdo12.springgomok.domain;
 
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
 import lombok.Getter;
 
 import java.util.HashSet;
@@ -36,13 +38,13 @@ public class GomokRoom {
 
     public void join(User user) {
         if (participants.size() >= PARTICIPANT_COUNT) {
-            throw new IllegalArgumentException("방이 이미 가득 찼습니다");
+            throw new BusinessException(ErrorCode.ROOM_FULL);
         }
 
         boolean alreadyJoined = participants.stream()
                 .anyMatch(p -> p.getUser().equals(user));
         if (alreadyJoined) {
-            throw new IllegalArgumentException("이미 참가한 유저입니다");
+            throw new BusinessException(ErrorCode.ALREADY_IN_ROOM);
         }
 
         Stone stone = getAvailableStone();
@@ -53,11 +55,11 @@ public class GomokRoom {
 
     public void startGomok(User user) {
         if(!isHost(user)) {
-            throw new IllegalArgumentException("방장만 게임을 시작할 수 있습니다");
+            throw new BusinessException(ErrorCode.FORBIDDEN);
         }
 
         if(gomokRoomStatus != GomokRoomStatus.READY) {
-            throw new IllegalArgumentException("준비가 완료되지 않았습니다");
+            throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
         gomokRoomStatus = GomokRoomStatus.PLAYING;
@@ -77,7 +79,7 @@ public class GomokRoom {
         Participant participant = getParticipant(user);
 
         if(gomokRoomStatus == GomokRoomStatus.PLAYING) {
-            throw new IllegalArgumentException("게임이 진행 중 입니다");
+            throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
         gomokRoomStatus = GomokRoomStatus.WAITING;
@@ -86,13 +88,13 @@ public class GomokRoom {
 
     public void placeGomokStone(int row, int col, User user) {
         if(gomokRoomStatus != GomokRoomStatus.PLAYING) {
-            throw new IllegalArgumentException("게임 진행 중에만 착수할 수 있습니다");
+            throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
         Participant participant = getParticipant(user);
 
         if(participant.getStone() != gomok.getCurrTurn()) {
-            throw new IllegalArgumentException("상대방의 차례입니다.");
+            throw new BusinessException(ErrorCode.NOT_YOUR_TURN);
         }
 
         gomok.placeStone(row, col, participant.getStone());
@@ -106,7 +108,7 @@ public class GomokRoom {
     }
 
     public Stone getWinner(User user) {
-        Participant participant = getParticipant(user);
+        getParticipant(user);
 
         return winner;
     }
@@ -135,6 +137,6 @@ public class GomokRoom {
         return participants.stream()
                 .filter(p -> p.getUser().equals(user))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("참가자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_ROOM_PARTICIPANT));
     }
 }

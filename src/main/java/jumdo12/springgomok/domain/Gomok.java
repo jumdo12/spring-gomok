@@ -1,5 +1,7 @@
 package jumdo12.springgomok.domain;
 
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
 import lombok.Getter;
 
 @Getter
@@ -40,7 +42,7 @@ public class Gomok {
 
     private void validatePosition(int row, int col) {
         if(grid[row][col] != Stone.EMPTY) {
-            throw new IllegalArgumentException("착수 위치가 올바르지 않습니다.");
+            throw new BusinessException(ErrorCode.INVALID_MOVE);
         }
     }
 
@@ -76,7 +78,7 @@ public class Gomok {
 
     private void validateTurn(Stone stone) {
         if(stone != currTurn) {
-            throw new IllegalArgumentException("상대방의 차례입니다.");
+            throw new BusinessException(ErrorCode.NOT_YOUR_TURN);
         }
     }
 
@@ -95,7 +97,7 @@ public class Gomok {
 
     private void validateBound(int row, int col){
         if(isOutBound(row, col)) {
-            throw new IllegalArgumentException("착수 위치가 올바르지 않습니다.");
+            throw new BusinessException(ErrorCode.INVALID_MOVE);
         }
     }
 

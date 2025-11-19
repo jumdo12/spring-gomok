@@ -1,5 +1,8 @@
 package jumdo12.springgomok.domain;
 
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
+import org.hibernate.usertype.BaseUserTypeSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,13 +59,14 @@ class RoomTest {
 
     @Test
     void 가득_찬_방에는_더_이상_참가할_수_없다() {
-        room.join(guest); // 2명 채움
+        room.join(guest);
 
         User another = User.create("another","userId","password");
 
         assertThatThrownBy(() -> room.join(another))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("방이 이미 가득 찼습니다");
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.ROOM_FULL);
     }
 
     @Test
@@ -70,7 +74,9 @@ class RoomTest {
         room.join(guest);
 
         assertThatThrownBy(() -> room.join(guest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.ROOM_FULL);
     }
 
     @Test
@@ -115,8 +121,9 @@ class RoomTest {
         User stranger = User.create("stranger", "userId", "password");
 
         assertThatThrownBy(() -> room.leave(stranger))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("참가자를 찾을 수 없습니다.");
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.NOT_ROOM_PARTICIPANT);
     }
 
     @Test
@@ -124,8 +131,9 @@ class RoomTest {
         room.join(guest);
 
         assertThatThrownBy(() -> room.placeGomokStone(7, 7, host))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("게임 진행 중에만 착수할 수 있습니다");
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.INVALID_ROOM_STATUS);
     }
 
     @Test
@@ -137,8 +145,9 @@ class RoomTest {
         room.startGomok(host);
 
         assertThatThrownBy(() -> room.placeGomokStone(7, 7, stranger))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("참가자를 찾을 수 없습니다");
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.NOT_ROOM_PARTICIPANT);
     }
 
     @Test
@@ -150,7 +159,7 @@ class RoomTest {
         room.placeGomokStone(7, 7, host);
         Stone result = room.getWinner(host);
 
-        assertThat(result).isEqualTo(Stone.EMPTY); // 아직 승자 없음
+        assertThat(result).isEqualTo(Stone.EMPTY);
         assertThat(room.getGomok().getGrid()[7][7]).isEqualTo(Stone.BLACK);
     }
 
@@ -208,7 +217,8 @@ class RoomTest {
         room.placeGomokStone(7, 7, host);
 
         assertThatThrownBy(() -> room.placeGomokStone(8, 8, host))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("상대방의 차례입니다");
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.NOT_YOUR_TURN);
     }
 }

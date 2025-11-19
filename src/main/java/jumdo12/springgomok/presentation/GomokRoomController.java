@@ -128,10 +128,6 @@ public class GomokRoomController {
     }
 
     private void sendRoomUpdateEvent(Long roomId, Long opponentId, String eventType, Long userId) {
-        if (opponentId == null) {
-            return;
-        }
-
         User user = userService.findUser(userId);
         RoomUpdateEvent event = new RoomUpdateEvent(eventType, user.getNickname());
         sseEmitters.sendRoomUpdate(roomId, opponentId, event);

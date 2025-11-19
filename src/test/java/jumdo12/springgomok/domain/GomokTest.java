@@ -1,5 +1,7 @@
 package jumdo12.springgomok.domain;
 
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +31,10 @@ class GomokTest {
         int col = -1;
 
         assertThatThrownBy(
-                () -> gomok.placeStone(row, col, Stone.BLACK)).
-                isInstanceOf(IllegalArgumentException.class);
+                () -> gomok.placeStone(row, col, Stone.BLACK))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.INVALID_MOVE);
     }
 
     @Test
@@ -42,7 +46,9 @@ class GomokTest {
 
         assertThatThrownBy(
                 () -> gomok.placeStone(row, col, Stone.WHITE)).
-                isInstanceOf(IllegalArgumentException.class);
+                isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.INVALID_MOVE);
     }
 
     @Test

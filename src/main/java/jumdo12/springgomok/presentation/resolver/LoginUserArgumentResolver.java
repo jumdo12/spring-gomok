@@ -2,6 +2,8 @@ package jumdo12.springgomok.presentation.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.User;
 import jumdo12.springgomok.domain.UserRepository;
 import jumdo12.springgomok.presentation.session.SessionProvider;
@@ -36,7 +38,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         HttpSession session = request.getSession(false);
 
         Long userId = sessionProvider.getUserIdSession(session)
-                .orElseThrow(() -> new IllegalArgumentException("로그인이 필요합니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
         return new LoginUser(userId);
     }
