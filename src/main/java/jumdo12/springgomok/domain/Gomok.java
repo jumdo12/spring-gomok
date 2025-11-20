@@ -14,10 +14,12 @@ public class Gomok {
     private final Stone[][] grid;
 
     private Stone currTurn;
+    private Stone winner;
 
     private Gomok(Stone[][] grid) {
         this.grid = grid;
         currTurn = Stone.BLACK;
+        winner = Stone.EMPTY;
     }
 
     public static Gomok create() {
@@ -37,6 +39,7 @@ public class Gomok {
         validateTurn(stone);
 
         grid[row][col] = stone;
+        calcWinner(row, col);
 
         currTurn = currTurn.opposite();
     }
@@ -49,11 +52,8 @@ public class Gomok {
         }
     }
 
-    public Stone calcWinner(int row, int col) {
+    private void calcWinner(int row, int col) {
         Stone stone = grid[row][col];
-        if (stone == Stone.EMPTY) {
-            return Stone.EMPTY;
-        }
 
         int[][] directions = {
                 {0, 1},
@@ -72,11 +72,9 @@ public class Gomok {
             count += countConsecutive(row, col, -dr, -dc, stone);
 
             if (count == 5) {
-                return stone;
+                this.winner = stone;
             }
         }
-
-        return Stone.EMPTY;
     }
 
     private void validateTurn(Stone stone) {

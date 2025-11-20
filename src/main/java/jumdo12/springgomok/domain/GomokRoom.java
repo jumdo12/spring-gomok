@@ -18,7 +18,6 @@ public class GomokRoom {
     private Set<Participant> participants;
     private Gomok gomok;
     private GomokRoomStatus gomokRoomStatus;
-    private Stone winner;
 
     private GomokRoom(Long id, String roomName, User host) {
         this.id = id;
@@ -26,7 +25,6 @@ public class GomokRoom {
         this.host = host;
         this.gomok = Gomok.create();
         this.gomokRoomStatus = GomokRoomStatus.WAITING;
-        this.winner = Stone.EMPTY;
 
         this.participants = new HashSet<>();
         participants.add(new Participant(host, Stone.BLACK));
@@ -93,28 +91,13 @@ public class GomokRoom {
 
         Participant participant = getParticipant(user);
 
-        if(participant.getStone() != gomok.getCurrTurn()) {
-            throw new BusinessException(ErrorCode.NOT_YOUR_TURN);
-        }
-
         gomok.placeStone(row, col, participant.getStone());
 
-        Stone winner = gomok.calcWinner(row, col);
+        Stone winner = gomok.getWinner();
 
         if(winner != Stone.EMPTY) {
             gomokRoomStatus = GomokRoomStatus.FINISHED;
-            this.winner = winner;
         }
-    }
-
-    public Stone getWinner(User user) {
-        getParticipant(user);
-
-        return winner;
-    }
-
-    public int getParticipantCount() {
-        return participants.size();
     }
 
     private Stone getAvailableStone() {
@@ -138,5 +121,13 @@ public class GomokRoom {
                 .filter(p -> p.getUser().equals(user))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_ROOM_PARTICIPANT));
+    }
+
+    public Stone getWinner() {
+        return gomok.getWinner();
+    }
+
+    public int getParticipantCount() {
+        return participants.size();
     }
 }

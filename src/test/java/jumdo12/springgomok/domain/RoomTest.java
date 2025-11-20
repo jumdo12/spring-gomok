@@ -157,7 +157,7 @@ class RoomTest {
         room.startGomok(host);
 
         room.placeGomokStone(7, 7, host);
-        Stone result = room.getWinner(host);
+        Stone result = room.getWinner();
 
         assertThat(result).isEqualTo(Stone.EMPTY);
         assertThat(room.getGomok().getGrid()[7][7]).isEqualTo(Stone.BLACK);
@@ -184,7 +184,7 @@ class RoomTest {
 
         // 마지막 착수로 5목 완성
         room.placeGomokStone(7, 7, host);
-        Stone winner = room.getWinner(host);
+        Stone winner = room.getWinner();
 
         assertThat(winner).isEqualTo(Stone.BLACK);
     }
@@ -204,7 +204,7 @@ class RoomTest {
         room.placeGomokStone(8, 6, guest);
 
         room.placeGomokStone(8, 8, host);
-        Stone winner = room.getWinner(host);
+        Stone winner = room.getWinner();
 
         assertThat(winner).isEqualTo(Stone.EMPTY);
     }

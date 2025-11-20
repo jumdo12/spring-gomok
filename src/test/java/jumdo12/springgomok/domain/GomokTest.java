@@ -65,7 +65,7 @@ class GomokTest {
         gomok.placeStone(8, 6, Stone.WHITE);
         gomok.placeStone(row, 7, Stone.BLACK);
 
-        Stone winner = gomok.calcWinner(row, 7);
+        Stone winner = gomok.getWinner();
 
         assertThat(winner).isEqualTo(Stone.BLACK);
     }
@@ -85,7 +85,7 @@ class GomokTest {
         gomok.placeStone(7, 7, Stone.BLACK);
         gomok.placeStone(6, col, Stone.WHITE);
 
-        Stone winner = gomok.calcWinner(6, col);
+        Stone winner = gomok.getWinner();
 
         assertThat(winner).isEqualTo(Stone.WHITE);
     }
@@ -102,7 +102,7 @@ class GomokTest {
         gomok.placeStone(8, 6, Stone.WHITE);
         gomok.placeStone(7, 7, Stone.BLACK);
 
-        Stone winner = gomok.calcWinner(7, 7);
+        Stone winner = gomok.getWinner();
 
         assertThat(winner).isEqualTo(Stone.BLACK);
     }
@@ -120,7 +120,7 @@ class GomokTest {
         gomok.placeStone(9, 9, Stone.BLACK);
         gomok.placeStone(3, 7, Stone.WHITE);
 
-        Stone winner = gomok.calcWinner(3, 7);
+        Stone winner = gomok.getWinner();
 
         assertThat(winner).isEqualTo(Stone.WHITE);
     }
@@ -137,7 +137,7 @@ class GomokTest {
         gomok.placeStone(8, 3, Stone.WHITE);
         gomok.placeStone(row, 4, Stone.BLACK);
 
-        Stone winner = gomok.calcWinner(row, 4);
+        Stone winner = gomok.getWinner();
 
         assertThat(winner).isEqualTo(Stone.EMPTY);
     }
@@ -154,7 +154,7 @@ class GomokTest {
         gomok.placeStone(8, 9, Stone.WHITE);
         gomok.placeStone(row, 7, Stone.BLACK);
 
-        Stone winner = gomok.calcWinner(row, 7);
+        Stone winner = gomok.getWinner();
 
         assertThat(winner).isEqualTo(Stone.EMPTY);
     }
@@ -164,18 +164,18 @@ class GomokTest {
         int row = 7;
 
         gomok.placeStone(row, 3, Stone.BLACK);
-        gomok.placeStone(8, 3, Stone.WHITE);
+        gomok.placeStone(row + 1, 3, Stone.WHITE);
         gomok.placeStone(row, 4, Stone.BLACK);
-        gomok.placeStone(8, 4, Stone.WHITE);
+        gomok.placeStone(row + 1, 4, Stone.WHITE);
         gomok.placeStone(row, 5, Stone.BLACK);
-        gomok.placeStone(8, 5, Stone.WHITE);
+        gomok.placeStone(row + 1, 5, Stone.WHITE);
         gomok.placeStone(row, 6, Stone.BLACK);
-        gomok.placeStone(8, 6, Stone.WHITE);
-        gomok.placeStone(row, 7, Stone.BLACK);
-        gomok.placeStone(8, 7, Stone.WHITE);
+        gomok.placeStone(row + 1, 6, Stone.WHITE);
         gomok.placeStone(row, 8, Stone.BLACK);
+        gomok.placeStone(row + 1, 8, Stone.WHITE);
+        gomok.placeStone(row, 7, Stone.BLACK);
 
-        Stone winner = gomok.calcWinner(row, 8);
+        Stone winner = gomok.getWinner();
 
         assertThat(winner).isEqualTo(Stone.EMPTY);
     }
