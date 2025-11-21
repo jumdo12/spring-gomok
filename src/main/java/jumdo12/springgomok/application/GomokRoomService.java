@@ -1,5 +1,6 @@
 package jumdo12.springgomok.application;
 
+import jumdo12.springgomok.application.dto.ChatMessage;
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
 import jumdo12.springgomok.application.dto.GameRoomInfo;
 import jumdo12.springgomok.common.execption.BusinessException;
@@ -9,6 +10,7 @@ import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -56,6 +58,12 @@ public class GomokRoomService {
         return waitingRooms.stream()
                 .map(GameRoomInfo::from)
                 .toList();
+    }
+
+    public ChatMessage sendChatMessage(LoginUser loginUser, String content) {
+        User user = findUser(loginUser.id());
+
+        return new ChatMessage(user.getNickname(), LocalDateTime.now(), content);
     }
 
     public GomokRoom findRoom(Long roomId) {

@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #C9A876 0%, #B5935E 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -22,13 +22,14 @@ body {
 
 /* 로그인 박스 */
 .login-box {
-    background: white;
+    background: #F5E6D3;
     border-radius: 12px;
     padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     max-width: 400px;
     margin: 0 auto;
     margin-top: 20vh;
+    border: 3px solid #8B6F47;
 }
 
 .login-box h1 {
@@ -77,15 +78,15 @@ body {
 }
 
 .btn-primary {
-    background: #667eea;
+    background: #C4A67A;
     color: white;
     margin-bottom: 10px;
 }
 
 .btn-primary:hover {
-    background: #5568d3;
+    background: #B8996D;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(196, 166, 122, 0.4);
 }
 
 .btn-secondary {
@@ -135,12 +136,15 @@ body {
 
 /* 방 목록 페이지 */
 .room-list-container {
-    background: white;
+    background: #F5E6D3;
     border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    max-width: 800px;
+    padding: 50px 80px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 1400px;
+    width: 90%;
+    min-height: 600px;
     margin: 20px auto;
+    border: 3px solid #8B6F47;
 }
 
 .header {
@@ -175,13 +179,15 @@ body {
 .controls {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-top: 30px;
+    justify-content: center;
 }
 
 .controls .btn {
     width: auto;
-    flex: 1;
+    padding: 15px 50px;
     margin: 0;
+    font-size: 18px;
 }
 
 .rooms-section h2 {
@@ -201,15 +207,16 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    background: #f8f9fa;
+    background: #EDD9C0;
     border-radius: 8px;
-    border: 1px solid #e9ecef;
+    border: 2px solid #A0826D;
     transition: all 0.3s;
 }
 
 .room-item:hover {
-    background: #e9ecef;
+    background: #E0C9A6;
     transform: translateX(5px);
+    box-shadow: 0 3px 10px rgba(107, 68, 35, 0.2);
 }
 
 .room-info {
@@ -226,12 +233,12 @@ body {
 }
 
 .room-participants {
-    color: #666;
+    color: #4A3728;
     font-size: 14px;
-    background: white;
+    background: #F5E6D3;
     padding: 4px 12px;
     border-radius: 12px;
-    border: 1px solid #ddd;
+    border: 2px solid #8B6F47;
 }
 
 .btn-join {
@@ -300,12 +307,13 @@ body {
 
 /* 게임 화면 */
 .game-container {
-    background: white;
+    background: #F5E6D3;
     border-radius: 12px;
     padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    max-width: 700px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 1100px;
     margin: 20px auto;
+    border: 3px solid #8B6F47;
 }
 
 .screen {
@@ -363,9 +371,9 @@ body {
     align-items: center;
     gap: 15px;
     padding: 20px;
-    background: #f8f9fa;
+    background: #EDD9C0;
     border-radius: 12px;
-    border: 3px solid #667eea;
+    border: 3px solid #8B6F47;
 }
 
 .player-card.empty {
@@ -393,8 +401,9 @@ body {
 }
 
 #waitingBoard {
-    border: 2px solid #333;
+    border: 3px solid #4A3728;
     border-radius: 4px;
+    background: #E8C99E;
 }
 
 /* 준비 화면 */
@@ -407,8 +416,9 @@ body {
 }
 
 #readyBoard {
-    border: 2px solid #333;
+    border: 3px solid #4A3728;
     border-radius: 4px;
+    background: #E8C99E;
 }
 
 /* 게임 보드 */
@@ -416,14 +426,16 @@ body {
     display: flex;
     justify-content: center;
     padding: 20px;
-    background: #f8f9fa;
+    background: #D4A574;
     border-radius: 8px;
+    border: 2px solid #8B6F47;
 }
 
 #gameBoard {
     cursor: pointer;
-    border: 2px solid #333;
+    border: 3px solid #4A3728;
     border-radius: 4px;
+    background: #E8C99E;
 }
 
 /* 게임 종료 화면 */
@@ -503,4 +515,137 @@ body {
     .game-footer .btn {
         width: 100%;
     }
+}
+
+/* 채팅창 레이아웃 */
+.game-layout-with-chat {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.waiting-game-layout,
+.ready-game-layout {
+    flex: 1;
+}
+
+/* 채팅 컨테이너 */
+.chat-container {
+    width: 300px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    background: #EDD9C0;
+    border-radius: 8px;
+    border: 2px solid #A0826D;
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 12px 15px;
+    background: #C4A67A;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    border-bottom: 2px solid #A0826D;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-message {
+    padding: 8px 12px;
+    border-radius: 8px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.chat-message.mine {
+    align-self: flex-end;
+    background: #B8996D;
+    color: white;
+}
+
+.chat-message.other {
+    align-self: flex-start;
+    background: #F5E6D3;
+    color: #333;
+    border: 1px solid #D9C4A8;
+}
+
+.chat-message-sender {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #4A3728;
+}
+
+.chat-message.mine .chat-message-sender {
+    color: #F5E6D3;
+}
+
+.chat-message-content {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.chat-message-time {
+    font-size: 10px;
+    margin-top: 4px;
+    opacity: 0.7;
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: #F5E6D3;
+    border-top: 2px solid #A0826D;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #C4A67A;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
+.chat-input:focus {
+    outline: none;
+    border-color: #8B6F47;
+}
+
+.chat-send-btn {
+    padding: 8px 16px;
+    margin: 0;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* 스크롤바 스타일 (웹킷 브라우저) */
+.chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #F5E6D3;
+    border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #C4A67A;
+    border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #B8996D;
 }

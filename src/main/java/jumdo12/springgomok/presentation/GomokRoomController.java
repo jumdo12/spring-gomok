@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jumdo12.springgomok.application.GomokRoomService;
 import jumdo12.springgomok.application.GomokService;
 import jumdo12.springgomok.application.UserService;
+import jumdo12.springgomok.application.dto.ChatMessage;
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
 import jumdo12.springgomok.application.dto.GameRoomInfo;
 import jumdo12.springgomok.domain.GomokRoom;
 import jumdo12.springgomok.domain.User;
 import jumdo12.springgomok.infra.sse.SseEmitters;
+import jumdo12.springgomok.presentation.dto.ChatRequest;
 import jumdo12.springgomok.presentation.dto.RoomCreateRequest;
 import jumdo12.springgomok.presentation.dto.RoomUpdateEvent;
 import jumdo12.springgomok.presentation.resolver.AuthUser;
@@ -107,7 +109,7 @@ public class GomokRoomController {
         GameRoomDetailInfo roomInfo = gomokRoomService.getGameDetailInfo(roomId, loginUser);
 
         sseEmitters.sendRoomUpdate(roomId, roomInfo.opponentId(),
-                new RoomUpdateEvent("GAME_STARTED", null));
+                new RoomUpdateEvent("GAME_STARTED", null, null));
 
         return ResponseEntity.noContent().build();
     }
@@ -122,14 +124,30 @@ public class GomokRoomController {
         GameRoomDetailInfo roomInfo = gomokRoomService.getGameDetailInfo(roomId, loginUser);
 
         sseEmitters.sendRoomUpdate(roomId, roomInfo.opponentId(),
-                new RoomUpdateEvent("STONE_SWITCHED", null));
+                new RoomUpdateEvent("STONE_SWITCHED", null, null));
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{roomId}/chat")
+    public ResponseEntity<Void> sendChat(
+            @PathVariable Long roomId,
+            @AuthUser LoginUser loginUser,
+            @RequestBody ChatRequest chatRequest
+    ) {
+        ChatMessage chatMessage = gomokRoomService.sendChatMessage(loginUser, chatRequest.content());
+        User user = userService.findUser(loginUser.id());
+
+        GameRoomDetailInfo roomInfo = gomokRoomService.getGameDetailInfo(roomId, loginUser);
+        sseEmitters.sendRoomUpdate(roomId, roomInfo.opponentId(),
+                new RoomUpdateEvent("CHAT_MESSAGE", user.getNickname(), chatMessage));
 
         return ResponseEntity.noContent().build();
     }
 
     private void sendRoomUpdateEvent(Long roomId, Long opponentId, String eventType, Long userId) {
         User user = userService.findUser(userId);
-        RoomUpdateEvent event = new RoomUpdateEvent(eventType, user.getNickname());
+        RoomUpdateEvent event = new RoomUpdateEvent(eventType, user.getNickname(), null);
         sseEmitters.sendRoomUpdate(roomId, opponentId, event);
     }
 }

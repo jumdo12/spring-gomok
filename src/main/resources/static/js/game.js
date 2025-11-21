@@ -43,6 +43,19 @@ const errorModal = document.getElementById('errorModal');
 const errorMessage = document.getElementById('errorMessage');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
+// 채팅 요소
+const chatMessagesWaiting = document.getElementById('chatMessagesWaiting');
+const chatInputWaiting = document.getElementById('chatInputWaiting');
+const chatSendBtnWaiting = document.getElementById('chatSendBtnWaiting');
+
+const chatMessagesReady = document.getElementById('chatMessagesReady');
+const chatInputReady = document.getElementById('chatInputReady');
+const chatSendBtnReady = document.getElementById('chatSendBtnReady');
+
+const chatMessagesPlaying = document.getElementById('chatMessagesPlaying');
+const chatInputPlaying = document.getElementById('chatInputPlaying');
+const chatSendBtnPlaying = document.getElementById('chatSendBtnPlaying');
+
 // 게임 상태
 let roomId = null;
 let roomInfo = null;
@@ -181,6 +194,11 @@ function handleRoomUpdateEvent(data) {
             console.log('상대방이 퇴장했습니다. 방 목록으로 이동합니다.');
             alert('상대방이 방을 나갔습니다.');
             goToRoomList();
+            break;
+        case 'CHAT_MESSAGE':
+            // 채팅 메시지 수신
+            console.log('💬 채팅 메시지 수신:', data.data);
+            receiveChatMessage(data.data);
             break;
         default:
             console.warn('알 수 없는 이벤트 타입:', data.type);
@@ -564,6 +582,101 @@ async function leaveRoom() {
     }
 }
 
+// 채팅 메시지 전송
+async function sendChatMessage(inputElement, chatMessagesElement) {
+    const content = inputElement.value.trim();
+
+    if (!content) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/rooms/${roomId}/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ content })
+        });
+
+        if (response.status === 401) {
+            redirectToLogin();
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: '메시지 전송에 실패했습니다.' }));
+            throw new Error(errorData.message || '메시지 전송에 실패했습니다.');
+        }
+
+        // 내 메시지 표시
+        const chatMessage = {
+            from: '나',
+            content: content,
+            sendAt: new Date().toISOString()
+        };
+
+        displayChatMessage(chatMessagesElement, chatMessage, true);
+        inputElement.value = '';
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+// 채팅 메시지 수신
+function receiveChatMessage(chatMessage) {
+    // 현재 화면에 맞는 채팅 영역에 표시
+    let chatMessagesElement;
+
+    if (gameStatus === 'WAITING') {
+        chatMessagesElement = chatMessagesWaiting;
+    } else if (gameStatus === 'READY') {
+        chatMessagesElement = chatMessagesReady;
+    } else if (gameStatus === 'PLAYING') {
+        chatMessagesElement = chatMessagesPlaying;
+    }
+
+    if (chatMessagesElement) {
+        displayChatMessage(chatMessagesElement, chatMessage, false);
+    }
+}
+
+// 채팅 메시지 표시
+function displayChatMessage(chatMessagesElement, chatMessage, isMine) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${isMine ? 'mine' : 'other'}`;
+
+    const senderDiv = document.createElement('div');
+    senderDiv.className = 'chat-message-sender';
+    senderDiv.textContent = chatMessage.from;
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'chat-message-content';
+    contentDiv.textContent = chatMessage.content;
+
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'chat-message-time';
+    timeDiv.textContent = formatTime(chatMessage.sendAt);
+
+    messageDiv.appendChild(senderDiv);
+    messageDiv.appendChild(contentDiv);
+    messageDiv.appendChild(timeDiv);
+
+    chatMessagesElement.appendChild(messageDiv);
+
+    // 스크롤을 맨 아래로
+    chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+}
+
+// 시간 포맷팅
+function formatTime(dateString) {
+    const date = new Date(dateString);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
 // 이벤트 리스너
 switchStoneBtn.addEventListener('click', switchStone);
 startGameBtn.addEventListener('click', startGame);
@@ -572,6 +685,22 @@ leaveBtn2.addEventListener('click', leaveRoom);
 leaveBtn3.addEventListener('click', leaveRoom);
 backToListBtn.addEventListener('click', goToRoomList);
 closeModalBtn.addEventListener('click', closeModal);
+
+// 채팅 전송 버튼
+chatSendBtnWaiting.addEventListener('click', () => sendChatMessage(chatInputWaiting, chatMessagesWaiting));
+chatSendBtnReady.addEventListener('click', () => sendChatMessage(chatInputReady, chatMessagesReady));
+chatSendBtnPlaying.addEventListener('click', () => sendChatMessage(chatInputPlaying, chatMessagesPlaying));
+
+// 채팅 입력 엔터키
+chatInputWaiting.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendChatMessage(chatInputWaiting, chatMessagesWaiting);
+});
+chatInputReady.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendChatMessage(chatInputReady, chatMessagesReady);
+});
+chatInputPlaying.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendChatMessage(chatInputPlaying, chatMessagesPlaying);
+});
 
 // 모달 외부 클릭 시 닫기
 errorModal.addEventListener('click', (event) => {

@@ -1,8 +1,6 @@
 // DOM 요소
 const roomsList = document.getElementById('roomsList');
 const createRoomBtn = document.getElementById('createRoomBtn');
-const refreshBtn = document.getElementById('refreshBtn');
-const logoutBtn = document.getElementById('logoutBtn');
 const createRoomModal = document.getElementById('createRoomModal');
 const roomNameInput = document.getElementById('roomName');
 const confirmCreateBtn = document.getElementById('confirmCreateBtn');
@@ -183,10 +181,10 @@ async function logout() {
 
 // 자동 갱신 시작
 function startAutoRefresh() {
-    // 5초마다 방 목록 갱신
+    // 3초마다 방 목록 갱신
     refreshTimer = setInterval(() => {
         loadRooms();
-    }, 5000);
+    }, 3000);
 }
 
 // 자동 갱신 중지
@@ -206,8 +204,6 @@ function handleKeyPress(event) {
 
 // 이벤트 리스너 등록
 createRoomBtn.addEventListener('click', openCreateRoomModal);
-refreshBtn.addEventListener('click', loadRooms);
-logoutBtn.addEventListener('click', logout);
 confirmCreateBtn.addEventListener('click', createRoom);
 cancelCreateBtn.addEventListener('click', closeCreateRoomModal);
 closeModalBtn.addEventListener('click', closeModal);

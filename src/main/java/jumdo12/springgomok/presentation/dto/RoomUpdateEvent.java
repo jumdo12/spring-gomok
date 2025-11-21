@@ -2,6 +2,7 @@ package jumdo12.springgomok.presentation.dto;
 
 public record RoomUpdateEvent(
         String type,
-        String userName
+        String userName,
+        Object data
 ) {
 }
