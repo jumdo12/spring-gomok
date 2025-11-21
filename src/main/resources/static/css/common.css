@@ -190,6 +190,12 @@ body {
     font-size: 18px;
 }
 
+.rooms-section {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
 .rooms-section h2 {
     color: #333;
     font-size: 20px;
@@ -200,6 +206,31 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #EDD9C0;
+    border-radius: 8px;
+    border: 2px solid #A0826D;
+}
+
+/* 방 목록 스크롤바 */
+.rooms-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.rooms-list::-webkit-scrollbar-track {
+    background: #F5E6D3;
+    border-radius: 5px;
+}
+
+.rooms-list::-webkit-scrollbar-thumb {
+    background: #C4A67A;
+    border-radius: 5px;
+}
+
+.rooms-list::-webkit-scrollbar-thumb:hover {
+    background: #B8996D;
 }
 
 .room-item {
@@ -253,6 +284,10 @@ body {
     padding: 40px;
     color: #999;
     font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;
 }
 
 /* 반응형 */
