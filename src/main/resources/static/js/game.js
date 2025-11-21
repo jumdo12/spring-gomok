@@ -108,11 +108,6 @@ async function loadRoomInfo() {
         }
 
         roomInfo = await response.json();
-        console.log('📋 방 정보:', roomInfo);
-        console.log('👤 내 ID:', roomInfo.myId);
-        console.log('👑 방장 여부:', roomInfo.isHost);
-        console.log('🎲 내 돌:', roomInfo.myStone);
-        console.log('👥 상대방:', roomInfo.opponentName);
 
         // SSE 구독 시작 (최초 한 번만)
         if (!eventSource) {
@@ -146,62 +141,48 @@ async function loadRoomInfo() {
 
 // SSE 이벤트 구독
 function subscribeToEvents() {
-    console.log(`SSE 구독 시작: /api/rooms/${roomId}/subscribe`);
-
     eventSource = new EventSource(`/api/rooms/${roomId}/subscribe`, {
         withCredentials: true
     });
 
-    eventSource.onopen = () => {
-        console.log('SSE 연결 성공!');
-    };
-
     eventSource.addEventListener('room-update', (event) => {
         const data = JSON.parse(event.data);
-        console.log('✅ Room Update Event 수신:', data);
         handleRoomUpdateEvent(data);
     });
 
     eventSource.addEventListener('move', (event) => {
         const data = JSON.parse(event.data);
-        console.log('✅ Move Event 수신:', data);
         handleMoveEvent(data);
     });
 
     eventSource.onerror = (error) => {
-        console.error('❌ SSE Error:', error);
-        console.log('SSE readyState:', eventSource.readyState);
-        if (eventSource.readyState === EventSource.CLOSED) {
-            console.log('SSE connection closed');
-        }
+        // SSE 에러 처리
     };
 }
 
 // RoomUpdateEvent 처리
 function handleRoomUpdateEvent(data) {
-    console.log('🔄 Room Update Event 처리:', data.type);
-
     switch (data.type) {
         case 'PARTICIPANT_JOINED':
         case 'GAME_STARTED':
         case 'STONE_SWITCHED':
             // 방 정보 다시 조회 (자동으로 올바른 화면으로 전환됨)
-            console.log('방 정보 다시 조회 시작...');
             loadRoomInfo();
             break;
         case 'PARTICIPANT_LEFT':
-            // 상대방이 나갔으면 방 목록으로 이동
-            console.log('상대방이 퇴장했습니다. 방 목록으로 이동합니다.');
-            alert('상대방이 방을 나갔습니다.');
-            goToRoomList();
+            // 방장이면 대기 화면으로, 방장이 아니면 방 목록으로 이동
+            if (isHost) {
+                alert('상대방이 방을 나갔습니다.');
+                loadRoomInfo(); // 대기 화면으로 돌아감
+            } else {
+                alert('방장이 방을 나갔습니다.');
+                goToRoomList();
+            }
             break;
         case 'CHAT_MESSAGE':
             // 채팅 메시지 수신
-            console.log('💬 채팅 메시지 수신:', data.data);
             receiveChatMessage(data.data);
             break;
-        default:
-            console.warn('알 수 없는 이벤트 타입:', data.type);
     }
 }
 
@@ -244,9 +225,6 @@ function renderWaitingScreen() {
 
 // 준비 화면 렌더링
 function renderReadyScreen() {
-    console.log('🎮 준비 화면 렌더링');
-    console.log('👑 방장:', roomInfo.isHost ? 'YES' : 'NO');
-
     gameStatus = 'READY';
     hideAllScreens();
     readyScreen.style.display = 'block';
@@ -275,7 +253,6 @@ function renderReadyScreen() {
     }
 
     // 방장만 버튼 표시
-    console.log('🔘 버튼 표시:', roomInfo.isHost ? '방장 버튼 보임' : '버튼 숨김');
     if (roomInfo.isHost) {
         switchStoneBtn.style.display = 'inline-block';
         startGameBtn.style.display = 'inline-block';
@@ -534,7 +511,6 @@ async function switchStone() {
         }
 
         // 성공하면 방 정보 다시 조회 (화면 업데이트)
-        console.log('✅ 돌 바꾸기 성공 - 화면 업데이트');
         await loadRoomInfo();
     } catch (error) {
         showError(error.message);
@@ -560,7 +536,6 @@ async function startGame() {
         }
 
         // 성공하면 방 정보 다시 조회 (화면 업데이트)
-        console.log('✅ 게임 시작 - 화면 업데이트');
         await loadRoomInfo();
     } catch (error) {
         showError(error.message);
