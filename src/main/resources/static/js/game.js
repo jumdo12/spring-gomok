@@ -67,6 +67,7 @@ let currentTurn = 'BLACK';
 let gameStatus = null;
 let isHost = false;
 let totalMoves = 0;
+let lastMove = null; // 마지막 착수 위치 {row, col}
 
 // 에러 모달 표시
 function showError(message) {
@@ -190,6 +191,7 @@ function handleRoomUpdateEvent(data) {
 function handleMoveEvent(data) {
     // 상대방 착수
     board[data.row][data.col] = opponentStone;
+    lastMove = { row: data.row, col: data.col }; // 마지막 착수 위치 저장
     totalMoves++;
     currentTurn = currentTurn === 'BLACK' ? 'WHITE' : 'BLACK';
 
@@ -276,6 +278,7 @@ function renderPlayingScreen() {
     if (totalMoves === 0) {
         board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill('EMPTY'));
         currentTurn = 'BLACK';
+        lastMove = null; // 마지막 착수 위치 초기화
     }
 
     drawBoard();
@@ -392,16 +395,18 @@ function drawBoard() {
     for (let row = 0; row < BOARD_SIZE; row++) {
         for (let col = 0; col < BOARD_SIZE; col++) {
             if (board[row][col] === 'BLACK') {
-                drawStone(row, col, 'BLACK');
+                const isLastMove = lastMove && lastMove.row === row && lastMove.col === col;
+                drawStone(row, col, 'BLACK', isLastMove);
             } else if (board[row][col] === 'WHITE') {
-                drawStone(row, col, 'WHITE');
+                const isLastMove = lastMove && lastMove.row === row && lastMove.col === col;
+                drawStone(row, col, 'WHITE', isLastMove);
             }
         }
     }
 }
 
 // 돌 그리기
-function drawStone(row, col, color) {
+function drawStone(row, col, color, isLastMove = false) {
     const x = CELL_SIZE * (col + 0.5);
     const y = CELL_SIZE * (row + 0.5);
 
@@ -416,6 +421,15 @@ function drawStone(row, col, color) {
         ctx.fill();
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    // 마지막 착수 위치 표시 (노란색 테두리)
+    if (isLastMove) {
+        ctx.beginPath();
+        ctx.arc(x, y, STONE_RADIUS + 2, 0, 2 * Math.PI);
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.7)'; // 연한 노란색
+        ctx.lineWidth = 3;
         ctx.stroke();
     }
 }
@@ -476,6 +490,7 @@ canvas.addEventListener('click', async (event) => {
 
         // 내 착수 반영
         board[row][col] = myStone;
+        lastMove = { row, col }; // 마지막 착수 위치 저장
         totalMoves++;
         currentTurn = currentTurn === 'BLACK' ? 'WHITE' : 'BLACK';
 
