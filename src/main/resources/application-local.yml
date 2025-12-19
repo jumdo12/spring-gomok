@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: ${db.local.url}
+    username: ${db.local.username}
+    password: ${db.local.password}
+    driver-class-name: ${db.local.driver-class-name}
+
+  jpa:
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
