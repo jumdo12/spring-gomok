@@ -203,10 +203,12 @@ function handleKeyPress(event) {
 }
 
 // 이벤트 리스너 등록
+const logoutBtn = document.getElementById('logoutBtn');
 createRoomBtn.addEventListener('click', openCreateRoomModal);
 confirmCreateBtn.addEventListener('click', createRoom);
 cancelCreateBtn.addEventListener('click', closeCreateRoomModal);
 closeModalBtn.addEventListener('click', closeModal);
+logoutBtn.addEventListener('click', logout);
 roomNameInput.addEventListener('keypress', handleKeyPress);
 
 // 모달 외부 클릭 시 닫기

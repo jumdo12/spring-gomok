@@ -1,105 +1,204 @@
-/* 전역 스타일 */
+/* 토스 스타일 디자인 시스템 */
+
+/* 전역 리셋 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Pretendard 폰트 (토스 스타일) */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+/* CSS 변수 정의 */
+:root {
+    /* 컬러 시스템 */
+    --color-primary: #0064FF;
+    --color-primary-hover: #0055EA;
+    --color-primary-pressed: #0047D1;
+
+    --color-background: #F9FAFB;
+    --color-surface: #FFFFFF;
+    --color-surface-alt: #F2F4F6;
+
+    --color-text-primary: #191F28;
+    --color-text-secondary: #4E5968;
+    --color-text-tertiary: #8B95A1;
+    --color-text-disabled: #D1D6DB;
+
+    --color-border: #E5E8EB;
+    --color-border-strong: #D1D6DB;
+
+    --color-success: #00C853;
+    --color-error: #F04452;
+    --color-warning: #FFB300;
+
+    /* 타이포그래피 */
+    --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+
+    /* 간격 */
+    --spacing-1: 4px;
+    --spacing-2: 8px;
+    --spacing-3: 12px;
+    --spacing-4: 16px;
+    --spacing-5: 20px;
+    --spacing-6: 24px;
+    --spacing-8: 32px;
+    --spacing-10: 40px;
+    --spacing-12: 48px;
+
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+
+    /* 그림자 */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    /* 애니메이션 */
+    --transition-fast: 0.15s ease-in-out;
+    --transition-base: 0.2s ease-in-out;
+    --transition-slow: 0.3s ease-in-out;
+}
+
+/* 기본 스타일 */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #C9A876 0%, #B5935E 100%);
+    font-family: var(--font-family);
+    background: var(--color-background);
+    color: var(--color-text-primary);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
     width: 100%;
     max-width: 1200px;
-    padding: 20px;
+    padding: var(--spacing-6);
 }
 
-/* 로그인 박스 */
+/* ===== 로그인/회원가입 페이지 ===== */
 .login-box {
-    background: #F5E6D3;
-    border-radius: 12px;
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-12);
+    box-shadow: var(--shadow-lg);
+    max-width: 420px;
     margin: 0 auto;
-    margin-top: 20vh;
-    border: 3px solid #8B6F47;
+    border: 1px solid var(--color-border);
 }
 
 .login-box h1 {
     text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 28px;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-10);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
-/* 폼 그룹 */
+/* ===== 폼 스타일 ===== */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-6);
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
-    color: #555;
-    font-weight: 500;
+    margin-bottom: var(--spacing-2);
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    font-size: 14px;
 }
 
 .form-group input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.3s;
+    padding: var(--spacing-4) var(--spacing-4);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-family: var(--font-family);
+    transition: all var(--transition-fast);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+}
+
+.form-group input::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+.form-group input:hover {
+    border-color: var(--color-border-strong);
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 100, 255, 0.1);
 }
 
-/* 버튼 */
+/* ===== 버튼 스타일 ===== */
 .btn {
     width: 100%;
-    padding: 12px;
+    padding: var(--spacing-4) var(--spacing-6);
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     font-size: 16px;
     font-weight: 600;
+    font-family: var(--font-family);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .btn-primary {
-    background: #C4A67A;
+    background: var(--color-primary);
     color: white;
-    margin-bottom: 10px;
+    margin-bottom: var(--spacing-3);
 }
 
-.btn-primary:hover {
-    background: #B8996D;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(196, 166, 122, 0.4);
+.btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 100, 255, 0.3);
+}
+
+.btn-primary:active:not(:disabled) {
+    background: var(--color-primary-pressed);
+    transform: translateY(0);
 }
 
 .btn-secondary {
-    background: #f0f0f0;
-    color: #333;
+    background: var(--color-surface-alt);
+    color: var(--color-text-primary);
 }
 
-.btn-secondary:hover {
-    background: #e0e0e0;
-    transform: translateY(-2px);
+.btn-secondary:hover:not(:disabled) {
+    background: #E5E8EB;
+    transform: translateY(-1px);
 }
 
-/* 모달 */
+.btn-secondary:active:not(:disabled) {
+    background: #D1D6DB;
+    transform: translateY(0);
+}
+
+/* ===== 모달 ===== */
 .modal {
     display: none;
     position: fixed;
@@ -107,87 +206,113 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(25, 31, 40, 0.6);
+    backdrop-filter: blur(4px);
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    animation: fadeIn var(--transition-base);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-content {
-    background: white;
-    border-radius: 12px;
-    padding: 30px;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-8);
     max-width: 400px;
     width: 90%;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-lg);
+    animation: slideUp var(--transition-base);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .modal-content h3 {
-    color: #e74c3c;
-    margin-bottom: 15px;
-    font-size: 22px;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-4);
+    font-size: 20px;
+    font-weight: 700;
 }
 
 .modal-content p {
-    color: #555;
-    margin-bottom: 20px;
-    line-height: 1.5;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-6);
+    line-height: 1.6;
+    font-size: 15px;
 }
 
-/* 방 목록 페이지 */
+/* ===== 방 목록 페이지 ===== */
 .room-list-container {
-    background: #F5E6D3;
-    border-radius: 12px;
-    padding: 50px 80px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    max-width: 1400px;
-    width: 90%;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-10);
+    box-shadow: var(--shadow-md);
+    max-width: 1200px;
+    width: 100%;
     min-height: 600px;
-    margin: 20px auto;
-    border: 3px solid #8B6F47;
+    margin: var(--spacing-6) auto;
+    border: 1px solid var(--color-border);
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: var(--spacing-8);
+    padding-bottom: var(--spacing-6);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .header h1 {
-    color: #333;
+    color: var(--color-text-primary);
     font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     margin: 0;
 }
 
 .btn-logout {
     width: auto;
-    padding: 10px 20px;
-    background: #e74c3c;
+    padding: var(--spacing-3) var(--spacing-5);
+    background: var(--color-error);
     color: white;
     margin: 0;
 }
 
-.btn-logout:hover {
-    background: #c0392b;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+.btn-logout:hover:not(:disabled) {
+    background: #E03E4A;
+    box-shadow: 0 4px 12px rgba(240, 68, 82, 0.3);
 }
 
 .controls {
     display: flex;
-    gap: 10px;
-    margin-top: 30px;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-8);
     justify-content: center;
 }
 
 .controls .btn {
     width: auto;
-    padding: 15px 50px;
+    padding: var(--spacing-4) var(--spacing-12);
     margin: 0;
-    font-size: 18px;
+    font-size: 17px;
 }
 
 .rooms-section {
@@ -197,116 +322,417 @@ body {
 }
 
 .rooms-section h2 {
-    color: #333;
+    color: var(--color-text-primary);
     font-size: 20px;
-    margin-bottom: 15px;
+    font-weight: 700;
+    margin-bottom: var(--spacing-4);
+    letter-spacing: -0.01em;
 }
 
 .rooms-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    max-height: 350px;
+    gap: var(--spacing-3);
+    max-height: 400px;
     overflow-y: auto;
-    padding: 10px;
-    background: #EDD9C0;
-    border-radius: 8px;
-    border: 2px solid #A0826D;
+    padding: var(--spacing-2);
 }
 
-/* 방 목록 스크롤바 */
+/* 스크롤바 스타일 */
 .rooms-list::-webkit-scrollbar {
-    width: 10px;
+    width: 6px;
 }
 
 .rooms-list::-webkit-scrollbar-track {
-    background: #F5E6D3;
-    border-radius: 5px;
+    background: transparent;
 }
 
 .rooms-list::-webkit-scrollbar-thumb {
-    background: #C4A67A;
-    border-radius: 5px;
+    background: var(--color-border-strong);
+    border-radius: 3px;
 }
 
 .rooms-list::-webkit-scrollbar-thumb:hover {
-    background: #B8996D;
+    background: var(--color-text-tertiary);
 }
 
 .room-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    background: #EDD9C0;
-    border-radius: 8px;
-    border: 2px solid #A0826D;
-    transition: all 0.3s;
+    padding: var(--spacing-5) var(--spacing-6);
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--color-border);
+    transition: all var(--transition-fast);
+    cursor: pointer;
 }
 
 .room-item:hover {
-    background: #E0C9A6;
-    transform: translateX(5px);
-    box-shadow: 0 3px 10px rgba(107, 68, 35, 0.2);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+    transform: translateX(4px);
 }
 
 .room-info {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: var(--spacing-4);
     flex: 1;
 }
 
 .room-name {
     font-weight: 600;
-    color: #333;
+    color: var(--color-text-primary);
     font-size: 16px;
+    letter-spacing: -0.01em;
 }
 
 .room-participants {
-    color: #4A3728;
+    color: var(--color-text-secondary);
     font-size: 14px;
-    background: #F5E6D3;
-    padding: 4px 12px;
-    border-radius: 12px;
-    border: 2px solid #8B6F47;
+    font-weight: 600;
+    background: var(--color-surface-alt);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: 20px;
 }
 
 .btn-join {
     width: auto;
-    padding: 8px 24px;
+    padding: var(--spacing-2) var(--spacing-6);
     margin: 0;
     font-size: 14px;
 }
 
 .empty-message {
     text-align: center;
-    padding: 40px;
-    color: #999;
-    font-size: 16px;
+    padding: var(--spacing-12);
+    color: var(--color-text-tertiary);
+    font-size: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 250px;
+    min-height: 300px;
 }
 
-/* 반응형 */
-@media (max-width: 480px) {
+/* ===== 게임 화면 ===== */
+.game-container {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-8);
+    box-shadow: var(--shadow-md);
+    max-width: 1100px;
+    margin: var(--spacing-6) auto;
+    border: 1px solid var(--color-border);
+}
+
+.screen {
+    min-height: 400px;
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.game-header h2 {
+    color: var(--color-text-primary);
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: var(--spacing-2);
+    letter-spacing: -0.02em;
+}
+
+.turn-indicator {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-3);
+}
+
+.game-footer {
+    margin-top: var(--spacing-6);
+    display: flex;
+    gap: var(--spacing-3);
+    justify-content: center;
+}
+
+.game-footer .btn {
+    width: auto;
+    margin: 0;
+    padding: var(--spacing-3) var(--spacing-8);
+}
+
+/* 대기 화면 */
+.waiting-game-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-6);
+    padding: var(--spacing-6);
+}
+
+.player-side {
+    flex: 0 0 150px;
+}
+
+.player-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-6);
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--color-border);
+}
+
+.player-card.empty {
+    border: 1.5px dashed var(--color-border-strong);
+    opacity: 0.5;
+}
+
+.stone-display {
+    font-size: 60px;
+    line-height: 1;
+}
+
+.player-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.center-board {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#waitingBoard {
+    border: 2px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: #FFF9E6;
+}
+
+/* 준비 화면 */
+.ready-game-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-6);
+    padding: var(--spacing-6);
+}
+
+#readyBoard {
+    border: 2px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: #FFF9E6;
+}
+
+/* 게임 보드 */
+.board-container {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-6);
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+#gameBoard {
+    cursor: pointer;
+    border: 2px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: #FFF9E6;
+    box-shadow: var(--shadow-sm);
+}
+
+/* 게임 종료 화면 */
+.result-content {
+    text-align: center;
+    padding: var(--spacing-12) var(--spacing-6);
+}
+
+.result-content h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: var(--spacing-5);
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+}
+
+#winnerInfo {
+    font-size: 18px;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-8);
+}
+
+/* ===== 채팅 ===== */
+.game-layout-with-chat {
+    display: flex;
+    gap: var(--spacing-6);
+    align-items: flex-start;
+}
+
+.waiting-game-layout,
+.ready-game-layout {
+    flex: 1;
+}
+
+.chat-container {
+    width: 320px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--color-border);
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: var(--spacing-4) var(--spacing-5);
+    background: var(--color-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: var(--spacing-4);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    background: var(--color-background);
+}
+
+.chat-message {
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-sm);
+    max-width: 80%;
+    word-wrap: break-word;
+    animation: messageSlide var(--transition-fast);
+}
+
+@keyframes messageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-message.mine {
+    align-self: flex-end;
+    background: var(--color-primary);
+    color: white;
+}
+
+.chat-message.other {
+    align-self: flex-start;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+}
+
+.chat-message-sender {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: var(--spacing-1);
+    opacity: 0.8;
+}
+
+.chat-message-content {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.chat-message-time {
+    font-size: 11px;
+    margin-top: var(--spacing-1);
+    opacity: 0.6;
+}
+
+.chat-input-area {
+    display: flex;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+}
+
+.chat-input {
+    flex: 1;
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: var(--font-family);
+    background: var(--color-surface);
+    transition: all var(--transition-fast);
+}
+
+.chat-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 100, 255, 0.1);
+}
+
+.chat-send-btn {
+    padding: var(--spacing-3) var(--spacing-5);
+    margin: 0;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-tertiary);
+}
+
+/* ===== 반응형 디자인 ===== */
+@media (max-width: 768px) {
     .login-box {
-        padding: 30px 20px;
+        padding: var(--spacing-8) var(--spacing-6);
+        max-width: 100%;
+        margin: var(--spacing-4);
     }
 
     .login-box h1 {
-        font-size: 24px;
+        font-size: 26px;
     }
 
     .room-list-container {
-        padding: 20px;
+        padding: var(--spacing-6) var(--spacing-5);
+        margin: var(--spacing-4);
     }
 
     .header {
         flex-direction: column;
-        gap: 15px;
+        gap: var(--spacing-4);
         align-items: flex-start;
     }
 
@@ -320,199 +746,48 @@ body {
 
     .controls {
         flex-direction: column;
+        width: 100%;
+    }
+
+    .controls .btn {
+        width: 100%;
     }
 
     .room-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+        gap: var(--spacing-3);
     }
 
     .room-info {
         width: 100%;
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
+        gap: var(--spacing-2);
     }
 
     .btn-join {
         width: 100%;
     }
-}
 
-/* 게임 화면 */
-.game-container {
-    background: #F5E6D3;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    max-width: 1100px;
-    margin: 20px auto;
-    border: 3px solid #8B6F47;
-}
-
-.screen {
-    min-height: 400px;
-}
-
-.game-header {
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.game-header h2 {
-    color: #333;
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.turn-indicator {
-    font-size: 18px;
-    font-weight: 600;
-    margin-top: 10px;
-}
-
-.game-footer {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.game-footer .btn {
-    width: auto;
-    margin: 0;
-    padding: 10px 30px;
-}
-
-/* 대기 화면 */
-.waiting-game-layout {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 20px;
-}
-
-.player-side {
-    flex: 0 0 150px;
-}
-
-.player-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    padding: 20px;
-    background: #EDD9C0;
-    border-radius: 12px;
-    border: 3px solid #8B6F47;
-}
-
-.player-card.empty {
-    border: 3px dashed #ddd;
-    opacity: 0.6;
-}
-
-.stone-display {
-    font-size: 60px;
-    line-height: 1;
-}
-
-.player-name {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-}
-
-.center-board {
-    flex: 1;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#waitingBoard {
-    border: 3px solid #4A3728;
-    border-radius: 4px;
-    background: #E8C99E;
-}
-
-/* 준비 화면 */
-.ready-game-layout {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 20px;
-}
-
-#readyBoard {
-    border: 3px solid #4A3728;
-    border-radius: 4px;
-    background: #E8C99E;
-}
-
-/* 게임 보드 */
-.board-container {
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    background: #D4A574;
-    border-radius: 8px;
-    border: 2px solid #8B6F47;
-}
-
-#gameBoard {
-    cursor: pointer;
-    border: 3px solid #4A3728;
-    border-radius: 4px;
-    background: #E8C99E;
-}
-
-/* 게임 종료 화면 */
-.result-content {
-    text-align: center;
-    padding: 60px 20px;
-}
-
-.result-content h1 {
-    font-size: 36px;
-    margin-bottom: 20px;
-}
-
-#winnerInfo {
-    font-size: 20px;
-    color: #666;
-    margin-bottom: 30px;
-}
-
-/* 반응형 - 게임 화면 */
-@media (max-width: 768px) {
     .game-container {
-        padding: 20px;
-        margin: 10px;
+        padding: var(--spacing-5);
+        margin: var(--spacing-3);
     }
 
-    #gameBoard {
-        width: 100% !important;
-        height: auto !important;
-    }
-
-    .game-header h2 {
-        font-size: 20px;
-    }
-
-    .turn-indicator {
-        font-size: 16px;
-    }
-
-    .waiting-game-layout {
+    .game-layout-with-chat {
         flex-direction: column;
-        gap: 15px;
+    }
+
+    .chat-container {
+        width: 100%;
+        order: 2;
+    }
+
+    .waiting-game-layout,
+    .ready-game-layout {
+        flex-direction: column;
+        gap: var(--spacing-4);
     }
 
     .player-side {
@@ -522,25 +797,14 @@ body {
 
     .center-board {
         order: -1;
+        width: 100%;
     }
 
-    #waitingBoard {
-        width: 100% !important;
-        height: auto !important;
-    }
-
-    .ready-game-layout {
-        flex-direction: column;
-        gap: 15px;
-    }
-
+    #gameBoard,
+    #waitingBoard,
     #readyBoard {
         width: 100% !important;
         height: auto !important;
-    }
-
-    .result-content h1 {
-        font-size: 28px;
     }
 
     .game-footer {
@@ -550,137 +814,26 @@ body {
     .game-footer .btn {
         width: 100%;
     }
+
+    .result-content h1 {
+        font-size: 28px;
+    }
 }
 
-/* 채팅창 레이아웃 */
-.game-layout-with-chat {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-}
+@media (max-width: 480px) {
+    .login-box {
+        padding: var(--spacing-6) var(--spacing-5);
+    }
 
-.waiting-game-layout,
-.ready-game-layout {
-    flex: 1;
-}
+    .login-box h1 {
+        font-size: 24px;
+    }
 
-/* 채팅 컨테이너 */
-.chat-container {
-    width: 300px;
-    height: 500px;
-    display: flex;
-    flex-direction: column;
-    background: #EDD9C0;
-    border-radius: 8px;
-    border: 2px solid #A0826D;
-    overflow: hidden;
-}
+    .form-group input {
+        font-size: 16px; /* iOS에서 줌 방지 */
+    }
 
-.chat-header {
-    padding: 12px 15px;
-    background: #C4A67A;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    text-align: center;
-    border-bottom: 2px solid #A0826D;
-}
-
-.chat-messages {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.chat-message {
-    padding: 8px 12px;
-    border-radius: 8px;
-    max-width: 80%;
-    word-wrap: break-word;
-}
-
-.chat-message.mine {
-    align-self: flex-end;
-    background: #B8996D;
-    color: white;
-}
-
-.chat-message.other {
-    align-self: flex-start;
-    background: #F5E6D3;
-    color: #333;
-    border: 1px solid #D9C4A8;
-}
-
-.chat-message-sender {
-    font-size: 11px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: #4A3728;
-}
-
-.chat-message.mine .chat-message-sender {
-    color: #F5E6D3;
-}
-
-.chat-message-content {
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-.chat-message-time {
-    font-size: 10px;
-    margin-top: 4px;
-    opacity: 0.7;
-}
-
-.chat-input-area {
-    display: flex;
-    gap: 8px;
-    padding: 12px;
-    background: #F5E6D3;
-    border-top: 2px solid #A0826D;
-}
-
-.chat-input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 2px solid #C4A67A;
-    border-radius: 6px;
-    font-size: 14px;
-    background: white;
-}
-
-.chat-input:focus {
-    outline: none;
-    border-color: #8B6F47;
-}
-
-.chat-send-btn {
-    padding: 8px 16px;
-    margin: 0;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-/* 스크롤바 스타일 (웹킷 브라우저) */
-.chat-messages::-webkit-scrollbar {
-    width: 8px;
-}
-
-.chat-messages::-webkit-scrollbar-track {
-    background: #F5E6D3;
-    border-radius: 4px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb {
-    background: #C4A67A;
-    border-radius: 4px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb:hover {
-    background: #B8996D;
+    .btn {
+        font-size: 15px;
+    }
 }
