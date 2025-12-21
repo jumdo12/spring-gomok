@@ -26,6 +26,16 @@ public class PageController {
         return "game";
     }
 
+    @GetMapping("/game-history")
+    public String gameHistory() {
+        return "game-history";
+    }
+
+    @GetMapping("/game-replay")
+    public String gameReplay() {
+        return "game-replay";
+    }
+
     @GetMapping("/")
     public String home() {
         return "redirect:/login";

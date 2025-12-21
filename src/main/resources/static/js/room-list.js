@@ -202,13 +202,20 @@ function handleKeyPress(event) {
     }
 }
 
+// 전적 보기 페이지로 이동
+function viewGameHistory() {
+    window.location.href = '/game-history';
+}
+
 // 이벤트 리스너 등록
 const logoutBtn = document.getElementById('logoutBtn');
+const viewHistoryBtn = document.getElementById('viewHistoryBtn');
 createRoomBtn.addEventListener('click', openCreateRoomModal);
 confirmCreateBtn.addEventListener('click', createRoom);
 cancelCreateBtn.addEventListener('click', closeCreateRoomModal);
 closeModalBtn.addEventListener('click', closeModal);
 logoutBtn.addEventListener('click', logout);
+viewHistoryBtn.addEventListener('click', viewGameHistory);
 roomNameInput.addEventListener('keypress', handleKeyPress);
 
 // 모달 외부 클릭 시 닫기

@@ -3,8 +3,10 @@ package jumdo12.springgomok.application;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
+import jumdo12.springgomok.presentation.dto.GameHistoryResponse;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +22,9 @@ public class GomokHistoryService {
     private final GomokHistoryRepository gomokHistoryRepository;
     private final UserRepository userRepository;
 
+    @Async("historyExecutor")
     @Transactional
-    public GomokHistory createGomokHistory(
+    public void createGomokHistory(
             GomokRoom gomokRoom
     ) {
         Set<Participant> participants = gomokRoom.getParticipants();
@@ -44,25 +47,26 @@ public class GomokHistoryService {
                 whiteUser,
                 blackUser);
 
-        return gomokHistoryRepository.save(gomokHistory);
+        gomokHistoryRepository.save(gomokHistory);
     }
 
+    @Async("historyExecutor")
     @Transactional
-    public PlaceResult placeGomokHistory(GomokRoom gomokRoom, int row, int col, Stone stone) {
+    public void placeGomokHistory(GomokRoom gomokRoom, int row, int col, Stone stone) {
         String gomokGameId = gomokRoom.getGomokGameId();
         GomokHistory gomokHistory = gomokHistoryRepository.getGomokHistoryByGomokId(gomokGameId)
                 .orElseThrow(() -> new IllegalStateException("기록을 찾을 수 없습니다."));
-        return gomokHistory.addPlaceResult(row, col, stone);
+        gomokHistory.addPlaceResult(row, col, stone);
     }
 
-    public List<String> getUserGomokRecordId(LoginUser loginUser) {
+    public List<GameHistoryResponse> getUserGomokRecordId(LoginUser loginUser) {
         User user = findUser(loginUser.id());
 
         List<GomokHistory> byBlackStoneUserOrWhiteStoneUser = gomokHistoryRepository
                 .findByBlackStoneUserOrWhiteStoneUser(user, user);
 
         return byBlackStoneUserOrWhiteStoneUser.stream()
-                .map(GomokHistory::getGomokId)
+                .map(history -> new GameHistoryResponse(history.getGomokId(), history.getStartTime()))
                 .collect(Collectors.toList());
     }
 

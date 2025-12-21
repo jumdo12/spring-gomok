@@ -12,6 +12,7 @@ public enum ErrorCode {
     UNAUTHORIZED(401, "인증되지 않은 사용자입니다"),
     FORBIDDEN(403, "권한이 없습니다"),
     INVALID_CREDENTIALS(401, "아이디 또는 비밀번호가 올바르지 않습니다"),
+    DUPLICATE_USER_ID(409, "이미 사용중인 ID 입니다."),
 
     ROOM_NOT_FOUND(404, "방을 찾을 수 없습니다"),
     ROOM_FULL(400, "방이 가득 찼습니다"),

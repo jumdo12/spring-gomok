@@ -16,6 +16,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User createUser(String username, String userId, String password) {
+        if(userRepository.existsByUserId(userId)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_USER_ID);
+        }
+
         String encodePassword = passwordEncoder.encode(password);
 
         return userRepository.save(User.create(username, userId, encodePassword));

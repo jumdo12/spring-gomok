@@ -2,6 +2,7 @@ package jumdo12.springgomok.presentation;
 
 import jumdo12.springgomok.application.GomokHistoryService;
 import jumdo12.springgomok.domain.PlaceResult;
+import jumdo12.springgomok.presentation.dto.GameHistoryResponse;
 import jumdo12.springgomok.presentation.resolver.AuthUser;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class GomokResultController {
     private final GomokHistoryService gomokHistoryService;
 
     @GetMapping
-    public List<String> myGomokGameId(@AuthUser LoginUser loginUser) {
+    public List<GameHistoryResponse> myGomokGameId(@AuthUser LoginUser loginUser) {
         return gomokHistoryService.getUserGomokRecordId(loginUser);
     }
 
