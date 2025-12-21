@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게임 재생 - 오목 게임</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        .replay-controls {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-4);
+            margin-top: var(--spacing-6);
+            padding: var(--spacing-6);
+            background: var(--color-surface-alt);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+        }
+
+        .controls-row {
+            display: flex;
+            gap: var(--spacing-3);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .controls-row .btn {
+            width: auto;
+            padding: var(--spacing-3) var(--spacing-6);
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .move-info {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            padding: var(--spacing-3);
+            background: var(--color-surface);
+            border-radius: var(--radius-sm);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-4);
+            padding: 0 var(--spacing-4);
+        }
+
+        .move-slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--color-border);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .move-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .move-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--color-primary-hover);
+        }
+
+        .move-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition-fast);
+        }
+
+        .move-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            background: var(--color-primary-hover);
+        }
+
+        .slider-label {
+            min-width: 60px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
+
+        .board-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-4);
+            padding: var(--spacing-4);
+            background: var(--color-surface-alt);
+            border-radius: var(--radius-sm);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+
+        .stone-icon {
+            font-size: 24px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h2>게임 재생</h2>
+            <p id="gameIdDisplay" class="turn-indicator"></p>
+        </div>
+
+        <div class="screen">
+            <div class="board-info">
+                <div class="info-item">
+                    <span class="stone-icon">⚫</span>
+                    <span class="info-text">흑돌</span>
+                </div>
+                <div class="info-item">
+                    <span class="stone-icon">⚪</span>
+                    <span class="info-text">백돌</span>
+                </div>
+            </div>
+
+            <div class="board-container">
+                <canvas id="replayBoard" width="570" height="570"></canvas>
+            </div>
+
+            <div class="replay-controls">
+                <div class="move-info">
+                    <span id="moveInfo">게임을 불러오는 중...</span>
+                </div>
+
+                <div class="slider-container">
+                    <span class="slider-label">시작</span>
+                    <input type="range" id="moveSlider" class="move-slider" min="0" max="0" value="0">
+                    <span class="slider-label">종료</span>
+                </div>
+
+                <div class="controls-row">
+                    <button id="firstBtn" class="btn btn-secondary">⏮ 처음</button>
+                    <button id="prevBtn" class="btn btn-secondary">◀ 이전</button>
+                    <button id="playBtn" class="btn btn-primary">▶ 재생</button>
+                    <button id="nextBtn" class="btn btn-secondary">다음 ▶</button>
+                    <button id="lastBtn" class="btn btn-secondary">마지막 ⏭</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-footer">
+            <button id="backBtn" class="btn btn-secondary">전적 목록으로</button>
+        </div>
+    </div>
+
+    <!-- 에러 모달 -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <h3>오류</h3>
+            <p id="errorMessage"></p>
+            <button id="closeModalBtn" class="btn btn-primary">확인</button>
+        </div>
+    </div>
+
+    <script src="/js/game-replay.js"></script>
+</body>
+</html>

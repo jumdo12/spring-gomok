@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- 배경 -->
+  <rect width="100" height="100" fill="#0064FF" rx="20"/>
+
+  <!-- 오목판 패턴 (간단한 격자) -->
+  <line x1="25" y1="30" x2="75" y2="30" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+  <line x1="25" y1="50" x2="75" y2="50" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+  <line x1="25" y1="70" x2="75" y2="70" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+  <line x1="30" y1="25" x2="30" y2="75" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+  <line x1="50" y1="25" x2="50" y2="75" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+  <line x1="70" y1="25" x2="70" y2="75" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+
+  <!-- 검은 돌 -->
+  <circle cx="42" cy="42" r="10" fill="#191F28"/>
+  <circle cx="42" cy="42" r="10" fill="url(#gradient1)"/>
+
+  <!-- 흰 돌 -->
+  <circle cx="58" cy="58" r="10" fill="#FFFFFF"/>
+  <circle cx="58" cy="58" r="10" fill="url(#gradient2)"/>
+
+  <!-- 그라데이션 정의 -->
+  <defs>
+    <radialGradient id="gradient1">
+      <stop offset="0%" stop-color="#4E5968" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#191F28" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gradient2">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#E5E8EB" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 전적 - 오목 게임</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+    <div class="room-list-container">
+        <div class="header">
+            <h1>내 게임 전적</h1>
+        </div>
+
+        <div class="rooms-section">
+            <h2>플레이한 게임 기록</h2>
+            <div id="historyList" class="rooms-list">
+                <!-- 전적 목록이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="backBtn" class="btn btn-secondary">방 목록으로</button>
+        </div>
+    </div>
+
+    <!-- 에러 모달 -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <h3>오류</h3>
+            <p id="errorMessage"></p>
+            <button id="closeModalBtn" class="btn btn-primary">확인</button>
+        </div>
+    </div>
+
+    <script src="/js/game-history.js"></script>
+</body>
+</html>
