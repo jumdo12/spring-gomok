@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class GomokRoomService {
 
     private final GomokRooms gomokRooms;
+    private final GomokHistoryService gomokHistoryService;
     private final UserRepository userRepository;
 
     public GomokRoom createRoom(String roomName, LoginUser loginUser) {
@@ -42,6 +44,9 @@ public class GomokRoomService {
         User user = findUser(loginUser.id());
 
         gomokRooms.startGame(roomId, user);
+        GomokRoom room = findRoom(roomId);
+
+        gomokHistoryService.createGomokHistory(room);
     }
 
     public GameRoomDetailInfo getGameDetailInfo(Long roomId, LoginUser loginUser) {

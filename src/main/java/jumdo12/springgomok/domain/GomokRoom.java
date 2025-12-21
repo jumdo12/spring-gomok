@@ -84,7 +84,7 @@ public class GomokRoom {
         participants.remove(participant);
     }
 
-    public void placeGomokStone(int row, int col, User user) {
+    public Stone placeGomokStone(int row, int col, User user) {
         if(gomokRoomStatus != GomokRoomStatus.PLAYING) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
@@ -98,6 +98,8 @@ public class GomokRoom {
         if(winner != Stone.EMPTY) {
             gomokRoomStatus = GomokRoomStatus.FINISHED;
         }
+
+        return participant.getStone();
     }
 
     private Stone getAvailableStone() {
@@ -129,5 +131,9 @@ public class GomokRoom {
 
     public int getParticipantCount() {
         return participants.size();
+    }
+
+    public String getGomokGameId() {
+        return gomok.getId();
     }
 }

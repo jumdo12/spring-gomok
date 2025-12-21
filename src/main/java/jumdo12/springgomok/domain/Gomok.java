@@ -5,6 +5,8 @@ import jumdo12.springgomok.common.execption.ErrorCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.UUID;
+
 @Getter
 @Slf4j
 public class Gomok {
@@ -12,11 +14,13 @@ public class Gomok {
     private static final int BOARD_SIZE = 18;
 
     private final Stone[][] grid;
+    private final String id;
 
     private Stone currTurn;
     private Stone winner;
 
     private Gomok(Stone[][] grid) {
+        this.id = UUID.randomUUID().toString();
         this.grid = grid;
         currTurn = Stone.BLACK;
         winner = Stone.EMPTY;

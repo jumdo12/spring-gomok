@@ -13,12 +13,15 @@ public class GomokService {
 
     private final GomokRooms gomokRooms;
     private final UserRepository userRepository;
+    private final GomokHistoryService gomokHistoryService;
 
     public void placeGomok(Long roomId, LoginUser loginUser, int row, int col){
         GomokRoom gomokRoom = findRoom(roomId);
         User user = findUser(loginUser.id());
 
-        gomokRoom.placeGomokStone(row, col, user);
+        Stone stone = gomokRoom.placeGomokStone(row, col, user);
+
+        gomokHistoryService.placeGomokHistory(gomokRoom, row, col, stone);
     }
 
     public void switchStone(Long roomId, LoginUser loginUser) {
