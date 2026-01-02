@@ -2,8 +2,6 @@ services:
   app:
     image: jumdo12/server:gomok
     container_name: gomok-server
-    ports:
-      - "8080:8080"
     restart: unless-stopped
     environment:
       - SPRING_PROFILES_ACTIVE=prod
