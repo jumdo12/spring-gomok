@@ -6,8 +6,16 @@ spring:
     driver-class-name: ${db.prod.driver-class-name}
 
   jpa:
-    show-sql: true
-    properties:
-      hibernate.format_sql: true
     hibernate:
       ddl-auto: validate
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: read_only

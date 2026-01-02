@@ -1,4 +1,9 @@
 gomoku.jumdo12.cloud {
+    @blocked {
+        path /actuator*
+    }
+    respond @blocked "Access Denied" 403
+
     reverse_proxy gomok-server:8080
 }
     
