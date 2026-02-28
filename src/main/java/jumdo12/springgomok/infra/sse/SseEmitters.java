@@ -36,13 +36,6 @@ public class SseEmitters {
         send(emitter, "room-update", data);
     }
 
-    public void sendGameEnd(Long roomId, Long userId, Object data) {
-        SseEmitter emitter = getEmitter(roomId, userId);
-        if (emitter != null) {
-            send(emitter, "game-end", data);
-        }
-    }
-
     private SseEmitter getEmitter(Long roomId, Long userId) {
         SseConnectId key = new SseConnectId(roomId, userId);
         return emitters.get(key);
