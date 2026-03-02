@@ -5,11 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Embeddable
+@Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 public class PlaceResult {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private int placeRow;
     private int placeCol;
@@ -18,4 +21,11 @@ public class PlaceResult {
     private Stone stone;
 
     private Long moveOrder;
+
+    public PlaceResult(int placeRow, int placeCol, Stone stone, Long moveOrder) {
+        this.placeRow = placeRow;
+        this.placeCol = placeCol;
+        this.stone = stone;
+        this.moveOrder = moveOrder;
+    }
 }

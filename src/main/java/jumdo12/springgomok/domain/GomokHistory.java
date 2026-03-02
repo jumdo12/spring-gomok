@@ -34,11 +34,8 @@ public class GomokHistory {
     @Enumerated(EnumType.STRING)
     private Stone gameResult;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "gomok_place_history",
-            joinColumns = @JoinColumn(name = "gomok_history_id")
-    )
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "gomok_history_id")
     private List<PlaceResult> placeResults;
 
     private GomokHistory(
