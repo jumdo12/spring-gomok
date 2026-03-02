@@ -57,6 +57,8 @@ public class GomokHistoryService {
         GomokHistory gomokHistory = gomokHistoryRepository.getGomokHistoryByGomokId(gomokGameId)
                 .orElseThrow(() -> new IllegalStateException("기록을 찾을 수 없습니다."));
         gomokHistory.addPlaceResult(row, col, stone);
+
+        gomokHistoryRepository.save(gomokHistory);
     }
 
     public List<GameHistoryResponse> getUserGomokRecordId(LoginUser loginUser) {
