@@ -5,3 +5,19 @@ spring:
   config:
     import:
       - config/omok/db.yml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: read_only
+
+logging:
+  file:
+    name: /app/logs/application.log
+
