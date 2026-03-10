@@ -16,8 +16,12 @@ fi
 
 echo "현재: $CURRENT → 배포 대상: $NEXT"
 
-docker compose pull
+docker compose pull app-blue app-green
 docker compose up -d app-$NEXT_NAME
+if [ $? -ne 0 ]; then
+    echo "컨테이너 실행 실패"
+    exit 1
+fi
 
 echo "헬스체크 대기..."
 for i in {1..180}; do
