@@ -20,7 +20,7 @@ docker-compose pull
 docker-compose up -d app-$NEXT_NAME
 
 echo "헬스체크 대기..."
-for i in {1..30}; do
+for i in {1..180}; do
     STATUS=$(docker exec $NEXT curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health)
     if [ "$STATUS" == "200" ]; then
         echo "헬스체크 통과"
@@ -31,6 +31,7 @@ for i in {1..30}; do
 done
 
 if [ "$STATUS" != "200" ]; then
+    docker logs $NEXT
     echo "헬스체크 실패 - 롤백"
     docker-compose stop app-$NEXT_NAME
     exit 1
