@@ -4,6 +4,7 @@ gomoku.jumdo12.cloud {
     }
     respond @blocked "Access Denied" 403
 
-    reverse_proxy gomok-server:8080
+    reverse_proxy {
+        to {file./etc/caddy/upstream}
+    }
 }
-    

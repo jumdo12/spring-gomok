@@ -11,3 +11,14 @@ spring:
     properties:
       hibernate:
         show_sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: read_only

@@ -30,8 +30,22 @@ public class GomokRoom {
         participants.add(new Participant(host, Stone.BLACK));
     }
 
-    public static GomokRoom create(Long id, String roomName, User host) {
-        return new GomokRoom(id, roomName, host);
+    public static GomokRoom create(String roomName, User host) {
+        return new GomokRoom(null, roomName, host);
+    }
+
+    public static GomokRoom restore(
+            Long id,
+            String roomName,
+            GomokRoomStatus status,
+            User host, Set<Participant> participants,
+            Gomok gomok
+    ) {
+        GomokRoom room = new GomokRoom(id, roomName, host);
+        room.gomokRoomStatus = status;
+        room.participants = participants;
+        room.gomok = gomok;
+        return room;
     }
 
     public void join(User user) {

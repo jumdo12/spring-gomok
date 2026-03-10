@@ -55,8 +55,6 @@ public class GomokHistoryService {
     @Async("historyExecutor")
     @Transactional
     public void placeGomokHistory(GomokRoom gomokRoom, int row, int col, Stone stone) {
-        log.info("placeGomokHistory 진입: row={}, col={}, stone={}", row, col, stone);
-
         String gomokGameId = gomokRoom.getGomokGameId();
         GomokHistory gomokHistory = gomokHistoryRepository.getGomokHistoryByGomokId(gomokGameId)
                 .orElseThrow(() -> new IllegalStateException("기록을 찾을 수 없습니다."));

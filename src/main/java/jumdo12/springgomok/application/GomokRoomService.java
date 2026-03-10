@@ -6,6 +6,7 @@ import jumdo12.springgomok.application.dto.GameRoomInfo;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
+import jumdo12.springgomok.infra.redis.GomokRoomRedisRepository;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,66 +19,74 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class GomokRoomService {
 
-    private final GomokRooms gomokRooms;
+    private final GomokRoomRedisRepository gomokRoomRepository;
     private final GomokHistoryService gomokHistoryService;
     private final UserRepository userRepository;
 
     public GomokRoom createRoom(String roomName, LoginUser loginUser) {
         User user = findUser(loginUser.id());
-
-        return gomokRooms.createRoom(roomName, user);
+        GomokRoom room = GomokRoom.create(roomName, user);
+        return gomokRoomRepository.create(room);
     }
 
     public void joinRoom(Long roomId, LoginUser loginUser) {
         User user = findUser(loginUser.id());
+        GomokRoom room = findRoom(roomId);
 
-        gomokRooms.joinRoom(roomId, user);
+        room.join(user);
+        gomokRoomRepository.update(room);
     }
 
     public void leaveRoom(Long roomId, LoginUser loginUser) {
         User user = findUser(loginUser.id());
+        GomokRoom room = findRoom(roomId);
 
-        gomokRooms.leaveRoom(roomId, user);
+        if ((room.isHost(user) && room.getGomokRoomStatus() != GomokRoomStatus.FINISHED)
+                || (room.getParticipantCount() == 1)) {
+            gomokRoomRepository.deleteById(roomId);
+            return;
+        }
+
+        room.leave(user);
+        gomokRoomRepository.update(room);
     }
 
     public void startGame(Long roomId, LoginUser loginUser) {
         User user = findUser(loginUser.id());
-
-        gomokRooms.startGame(roomId, user);
         GomokRoom room = findRoom(roomId);
+
+        room.startGomok(user);
+        gomokRoomRepository.update(room);
 
         gomokHistoryService.createGomokHistory(room);
     }
 
     public GameRoomDetailInfo getGameDetailInfo(Long roomId, LoginUser loginUser) {
         User user = findUser(loginUser.id());
-
         GomokRoom room = findRoom(roomId);
 
         return GameRoomDetailInfo.from(room, user.getId());
     }
 
     public List<GameRoomInfo> getWaitingRooms() {
-        List<GomokRoom> waitingRooms = gomokRooms.getWaitingRooms();
-
-        return waitingRooms.stream()
+        return gomokRoomRepository.findAll().stream()
+                .filter(r -> r.getGomokRoomStatus() == GomokRoomStatus.WAITING)
                 .map(GameRoomInfo::from)
                 .toList();
     }
 
     public ChatMessage sendChatMessage(LoginUser loginUser, String content) {
         User user = findUser(loginUser.id());
-
         return new ChatMessage(user.getNickname(), LocalDateTime.now(), content);
     }
 
     public GomokRoom findRoom(Long roomId) {
-        return gomokRooms.findById(roomId)
+        return gomokRoomRepository.findById(roomId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
     }
 
     private User findUser(Long userId) {
-        return userRepository.findById(userId).
-                orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }

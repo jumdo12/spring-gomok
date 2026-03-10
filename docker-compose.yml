@@ -1,7 +1,17 @@
 services:
-  app:
+  app-blue:
     image: jumdo12/server:gomok
-    container_name: gomok-server
+    container_name: gomok-server-blue
+    restart: unless-stopped
+    volumes:
+      - app_logs:/app/logs
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - TZ=Asia/Seoul
+
+  app-green:
+    image: jumdo12/server:gomok
+    container_name: gomok-server-green
     restart: unless-stopped
     volumes:
       - app_logs:/app/logs
@@ -20,6 +30,13 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
 
   prometheus:
     image: prom/prometheus:latest
@@ -77,6 +94,7 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  redis_data:
   prometheus_data:
   grafana_data:
   loki_data:

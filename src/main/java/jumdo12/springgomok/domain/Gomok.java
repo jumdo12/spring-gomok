@@ -19,23 +19,30 @@ public class Gomok {
     private Stone currTurn;
     private Stone winner;
 
-    private Gomok(Stone[][] grid) {
-        this.id = UUID.randomUUID().toString();
+    private Gomok(String id, Stone[][] grid) {
+        this.id = id;
         this.grid = grid;
-        currTurn = Stone.BLACK;
-        winner = Stone.EMPTY;
+        this.currTurn = Stone.BLACK;
+        this.winner = Stone.EMPTY;
     }
 
     public static Gomok create() {
         Stone[][] grid = new Stone[BOARD_SIZE][BOARD_SIZE];
-
-        for(int i = 0; i < BOARD_SIZE; i++) {
-            for(int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
                 grid[i][j] = Stone.EMPTY;
             }
         }
 
-        return new Gomok(grid);
+        return new Gomok(UUID.randomUUID().toString(), grid);
+    }
+
+    public static Gomok restore(String id, Stone[][] grid, Stone currTurn, Stone winner) {
+        Gomok gomok = new Gomok(id, grid);
+        gomok.currTurn = currTurn;
+        gomok.winner = winner;
+
+        return gomok;
     }
 
     public void placeStone(int row, int col, Stone stone) {
@@ -102,7 +109,6 @@ public class Gomok {
 
     private void validateBound(int row, int col){
         if(isOutBound(row, col)) {
-            log.error("Move: row={}, col={}", row, col);
             throw new BusinessException(ErrorCode.INVALID_MOVE);
         }
     }
