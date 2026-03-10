@@ -16,8 +16,8 @@ fi
 
 echo "현재: $CURRENT → 배포 대상: $NEXT"
 
-docker compose pull
-docker compose up -d app-$NEXT_NAME
+docker-compose pull
+docker-compose up -d app-$NEXT_NAME
 
 echo "헬스체크 대기..."
 for i in {1..30}; do
@@ -32,7 +32,7 @@ done
 
 if [ "$STATUS" != "200" ]; then
     echo "헬스체크 실패 - 롤백"
-    docker compose stop app-$NEXT_NAME
+    docker-compose stop app-$NEXT_NAME
     exit 1
 fi
 
@@ -41,9 +41,9 @@ docker exec caddy caddy reload --config /etc/caddy/Caddyfile
 
 echo "이전 컨테이너 종료"
 if [[ $NEXT == *"blue"* ]]; then
-    docker compose stop app-green
+    docker-compose stop app-green
 else
-    docker compose stop app-blue
+    docker-compose stop app-blue
 fi
 
 echo "배포 완료"
