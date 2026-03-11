@@ -23,7 +23,5 @@ jobs:
 
       - name: Blue/Green Deploy
         run: |
-          pwd
-          ls -la
           chmod +x ./deploy.sh
           ./deploy.sh

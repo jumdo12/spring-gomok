@@ -24,14 +24,14 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "헬스체크 대기..."
-for i in {1..180}; do
+for i in {1..120}; do
     STATUS=$(docker exec $NEXT curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health)
     if [ "$STATUS" == "200" ]; then
         echo "헬스체크 통과"
         break
     fi
-    echo "대기 중... ($i/180)"
-    sleep 2
+    echo "대기 중... ($i/120)"
+    sleep 5
 done
 
 if [ "$STATUS" != "200" ]; then
