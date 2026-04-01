@@ -6,27 +6,24 @@ import jumdo12.springgomok.application.dto.GameRoomInfo;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
-import jumdo12.springgomok.infra.redis.GomokRoomRedisRepository;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class GomokRoomService {
 
-    private final GomokRoomRedisRepository gomokRoomRepository;
-    private final GomokHistoryService gomokHistoryService;
+    private final GomokRoomRepository gomokRoomRepository;
     private final UserRepository userRepository;
 
     public GomokRoom createRoom(String roomName, LoginUser loginUser) {
         User user = findUser(loginUser.id());
         GomokRoom room = GomokRoom.create(roomName, user);
-        return gomokRoomRepository.create(room);
+        return gomokRoomRepository.save(room);
     }
 
     public void joinRoom(Long roomId, LoginUser loginUser) {
@@ -41,13 +38,18 @@ public class GomokRoomService {
         User user = findUser(loginUser.id());
         GomokRoom room = findRoom(roomId);
 
-        if ((room.isHost(user) && room.getGomokRoomStatus() != GomokRoomStatus.FINISHED)
-                || (room.getParticipantCount() == 1)) {
+        if (room.getParticipantCount() == 1) {
             gomokRoomRepository.deleteById(roomId);
             return;
         }
 
         room.leave(user);
+
+        if (room.getGomokRoomStatus() == GomokRoomStatus.CLOSED) {
+            gomokRoomRepository.deleteById(roomId);
+            return;
+        }
+
         gomokRoomRepository.update(room);
     }
 
@@ -57,8 +59,6 @@ public class GomokRoomService {
 
         room.startGomok(user);
         gomokRoomRepository.update(room);
-
-        gomokHistoryService.createGomokHistory(room);
     }
 
     public GameRoomDetailInfo getGameDetailInfo(Long roomId, LoginUser loginUser) {

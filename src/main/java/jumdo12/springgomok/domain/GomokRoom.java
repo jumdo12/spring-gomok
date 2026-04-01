@@ -140,6 +140,13 @@ public class GomokRoom {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_ROOM_PARTICIPANT));
     }
 
+    public void assignId(Long id) {
+        if (this.id != null) {
+            throw new IllegalStateException("ID가 이미 존재합니다.");
+        }
+        this.id = id;
+    }
+
     public int getParticipantCount() {
         return players.size();
     }

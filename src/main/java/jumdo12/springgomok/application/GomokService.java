@@ -3,7 +3,6 @@ package jumdo12.springgomok.application;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
-import jumdo12.springgomok.infra.redis.GomokRoomRedisRepository;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GomokService {
 
-    private final GomokRoomRedisRepository gomokRoomRepository;
+    private final GomokRoomRepository gomokRoomRepository;
     private final UserRepository userRepository;
     private final GomokHistoryService gomokHistoryService;
 
@@ -20,10 +19,12 @@ public class GomokService {
         GomokRoom gomokRoom = findRoom(roomId);
         User user = findUser(loginUser.id());
 
-        Stone stone = gomokRoom.placeGomokStone(row, col, user);
+        gomokRoom.placeGomokStone(new Position(row, col), user);
         gomokRoomRepository.update(gomokRoom);
 
-        gomokHistoryService.placeGomokHistory(gomokRoom, row, col, stone);
+        if (gomokRoom.getGomokRoomStatus() == GomokRoomStatus.FINISHED) {
+            gomokHistoryService.saveGomokHistory(gomokRoom);
+        }
     }
 
     public void switchStone(Long roomId, LoginUser loginUser) {
@@ -32,10 +33,6 @@ public class GomokService {
 
         if (!gomokRoom.isHost(user)) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-
-        if (gomokRoom.getGomokRoomStatus() != GomokRoomStatus.READY) {
-            throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
         gomokRoom.switchParticipantsStone();

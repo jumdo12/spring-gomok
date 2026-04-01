@@ -26,19 +26,29 @@ public class SseEmitters {
 
     public void sendMove(Long roomId, Long userId, Object data) {
         SseEmitter emitter = getEmitter(roomId, userId);
+        if (emitter == null) return;
 
         send(emitter, "move", data);
     }
 
     public void sendRoomUpdate(Long roomId, Long userId, Object data) {
         SseEmitter emitter = getEmitter(roomId, userId);
+        if (emitter == null) return;
 
         send(emitter, "room-update", data);
     }
 
+    public void completeRoom(Long roomId, Long... userIds) {
+        for (Long userId : userIds) {
+            SseEmitter emitter = getEmitter(roomId, userId);
+            if (emitter != null) {
+                emitter.complete();
+            }
+        }
+    }
+
     private SseEmitter getEmitter(Long roomId, Long userId) {
-        SseConnectId key = new SseConnectId(roomId, userId);
-        return emitters.get(key);
+        return emitters.get(new SseConnectId(roomId, userId));
     }
 
     private void send(SseEmitter emitter, String eventName, Object data) {

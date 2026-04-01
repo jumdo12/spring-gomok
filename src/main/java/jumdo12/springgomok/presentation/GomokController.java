@@ -6,6 +6,8 @@ import jumdo12.springgomok.application.GomokRoomService;
 import jumdo12.springgomok.application.GomokService;
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
 import jumdo12.springgomok.domain.GomokRoom;
+import jumdo12.springgomok.domain.GomokRoomStatus;
+import jumdo12.springgomok.domain.Stone;
 import jumdo12.springgomok.infra.sse.SseEmitters;
 import jumdo12.springgomok.presentation.dto.MoveEvent;
 import jumdo12.springgomok.presentation.dto.PlaceRequest;
@@ -38,17 +40,23 @@ public class GomokController {
         GameRoomDetailInfo roomInfo = gomokRoomService.getGameDetailInfo(roomId, loginUser);
         GomokRoom room = gomokRoomService.findRoom(roomId);
 
+        Stone winnerStone = room.getWinner() != null ? room.getWinner().getStone() : null;
+
         MoveEvent event = new MoveEvent(
                 request.row(),
                 request.col(),
                 room.getGomokRoomStatus().name(),
-                room.getWinner()
+                winnerStone
         );
         sseEmitters.sendMove(roomId, roomInfo.opponentId(), event);
 
+        if (room.getGomokRoomStatus() == GomokRoomStatus.FINISHED) {
+            sseEmitters.completeRoom(roomId, loginUser.id(), roomInfo.opponentId());
+        }
+
         return ResponseEntity.ok(new PlaceResponse(
                 room.getGomokRoomStatus().name(),
-                room.getWinner()
+                winnerStone
         ));
     }
 }
