@@ -1,6 +1,6 @@
 package jumdo12.springgomok.infra.redis.dto;
 
-import jumdo12.springgomok.domain.Participant;
+import jumdo12.springgomok.domain.Player;
 import jumdo12.springgomok.domain.Stone;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ public class ParticipantRedisDto {
     private Long userId;
     private Stone stone;
 
-    public static ParticipantRedisDto from(Participant participant) {
-        return new ParticipantRedisDto(participant.getUser().getId(), participant.getStone());
+    public static ParticipantRedisDto from(Player player) {
+        return new ParticipantRedisDto(player.getUser().getId(), player.getStone());
     }
 }

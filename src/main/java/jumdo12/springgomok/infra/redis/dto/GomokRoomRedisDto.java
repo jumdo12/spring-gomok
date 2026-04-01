@@ -1,7 +1,5 @@
 package jumdo12.springgomok.infra.redis.dto;
 
-import jumdo12.springgomok.common.execption.BusinessException;
-import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +26,7 @@ public class GomokRoomRedisDto {
                 room.getRoomName(),
                 room.getGomokRoomStatus(),
                 room.getHost().getId(),
-                room.getParticipants().stream()
+                room.getPlayers().stream()
                         .map(ParticipantRedisDto::from)
                         .collect(Collectors.toSet()),
                 GomokRedisDto.from(room.getGomok())

@@ -29,17 +29,17 @@ public class GomokHistoryService {
     public void createGomokHistory(
             GomokRoom gomokRoom
     ) {
-        Set<Participant> participants = gomokRoom.getParticipants();
+        Set<Player> players = gomokRoom.getPlayers();
 
-        User whiteUser = participants.stream()
+        User whiteUser = players.stream()
                 .filter(p -> p.getStone() == Stone.WHITE)
-                .map(Participant::getUser)
+                .map(Player::getUser)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("백돌 플레이어가 없습니다."));
 
-        User blackUser = participants.stream()
+        User blackUser = players.stream()
                 .filter(p -> p.getStone() == Stone.BLACK)
-                .map(Participant::getUser)
+                .map(Player::getUser)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("흑돌 플레이어가 없습니다."));
 

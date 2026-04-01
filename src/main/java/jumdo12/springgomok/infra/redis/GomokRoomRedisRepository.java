@@ -33,7 +33,7 @@ public class GomokRoomRedisRepository {
                 room.getRoomName(),
                 room.getGomokRoomStatus(),
                 room.getHost(),
-                room.getParticipants(),
+                room.getPlayers(),
                 room.getGomok());
         redisTemplate.opsForValue().set(key(id), GomokRoomRedisDto.from(roomWithId), TTL);
         return roomWithId;
@@ -76,17 +76,17 @@ public class GomokRoomRedisRepository {
         User host = userRepository.findById(dto.getHostId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Set<Participant> participants = dto.getParticipants().stream()
+        Set<Player> players = dto.getParticipants().stream()
                 .map(p -> {
                     User user = userRepository.findById(p.getUserId())
                             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-                    return new Participant(user, p.getStone());
+                    return new Player(user, p.getStone());
                 })
                 .collect(Collectors.toSet());
 
         Gomok gomok = restoreGomok(dto.getGomok());
 
-        return GomokRoom.restore(dto.getId(), dto.getRoomName(), dto.getGomokRoomStatus(), host, participants, gomok);
+        return GomokRoom.restore(dto.getId(), dto.getRoomName(), dto.getGomokRoomStatus(), host, players, gomok);
     }
 
     private Gomok restoreGomok(GomokRedisDto dto) {

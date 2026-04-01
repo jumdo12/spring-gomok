@@ -15,45 +15,38 @@ public class GomokRoom {
     private Long id;
     private String roomName;
     private User host;
-    private Set<Participant> participants;
+    private Set<Player> players = new HashSet<>();
     private Gomok gomok;
     private GomokRoomStatus gomokRoomStatus;
+    private Player winner;
 
-    private GomokRoom(Long id, String roomName, User host) {
+    private GomokRoom(
+            Long id,
+            String roomName,
+            User host,
+            Gomok gomok,
+            GomokRoomStatus gomokRoomStatus
+    ) {
         this.id = id;
         this.roomName = roomName;
         this.host = host;
-        this.gomok = Gomok.create();
-        this.gomokRoomStatus = GomokRoomStatus.WAITING;
-
-        this.participants = new HashSet<>();
-        participants.add(new Participant(host, Stone.BLACK));
+        this.gomok = gomok;
+        this.gomokRoomStatus = gomokRoomStatus;
     }
 
     public static GomokRoom create(String roomName, User host) {
-        return new GomokRoom(null, roomName, host);
-    }
+        GomokRoom room = new GomokRoom(null, roomName, host, null, GomokRoomStatus.WAITING);
+        room.players.add(new Player(host, Stone.BLACK));
 
-    public static GomokRoom restore(
-            Long id,
-            String roomName,
-            GomokRoomStatus status,
-            User host, Set<Participant> participants,
-            Gomok gomok
-    ) {
-        GomokRoom room = new GomokRoom(id, roomName, host);
-        room.gomokRoomStatus = status;
-        room.participants = participants;
-        room.gomok = gomok;
         return room;
     }
 
     public void join(User user) {
-        if (participants.size() >= PARTICIPANT_COUNT) {
+        if (players.size() >= PARTICIPANT_COUNT) {
             throw new BusinessException(ErrorCode.ROOM_FULL);
         }
 
-        boolean alreadyJoined = participants.stream()
+        boolean alreadyJoined = players.stream()
                 .anyMatch(p -> p.getUser().equals(user));
         if (alreadyJoined) {
             throw new BusinessException(ErrorCode.ALREADY_IN_ROOM);
@@ -62,7 +55,7 @@ public class GomokRoom {
         Stone stone = getAvailableStone();
         gomokRoomStatus = GomokRoomStatus.READY;
 
-        participants.add(new Participant(user, stone));
+        players.add(new Player(user, stone));
     }
 
     public void startGomok(User user) {
@@ -74,12 +67,18 @@ public class GomokRoom {
             throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
+        this.gomok = Gomok.create(new GomokRule(), players);
+
         gomokRoomStatus = GomokRoomStatus.PLAYING;
     }
 
     public void switchParticipantsStone() {
-        for (Participant participant : participants) {
-            participant.switchStone();
+        if (gomokRoomStatus == GomokRoomStatus.PLAYING) {
+            throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
+        }
+
+        for (Player player : players) {
+            player.switchStone();
         }
     }
 
@@ -88,38 +87,40 @@ public class GomokRoom {
     }
 
     public void leave(User user) {
-        Participant participant = getParticipant(user);
+        Player player = getParticipant(user);
 
-        if(gomokRoomStatus == GomokRoomStatus.PLAYING) {
+        if (gomokRoomStatus == GomokRoomStatus.PLAYING) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
+        if (isHost(user)) {
+            gomokRoomStatus = GomokRoomStatus.CLOSED;
+            return;
+        }
+
         gomokRoomStatus = GomokRoomStatus.WAITING;
-        participants.remove(participant);
+        players.remove(player);
     }
 
-    public Stone placeGomokStone(int row, int col, User user) {
+    public void placeGomokStone(Position position, User user) {
         if(gomokRoomStatus != GomokRoomStatus.PLAYING) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
-        Participant participant = getParticipant(user);
+        Player player = getParticipant(user);
 
-        gomok.placeStone(row, col, participant.getStone());
+        MoveResult moveResult = gomok.placeStone(position, player);
 
-        Stone winner = gomok.getWinner();
-
-        if(winner != Stone.EMPTY) {
+        if (moveResult.isWinningMove()) {
+            this.winner = player;
             gomokRoomStatus = GomokRoomStatus.FINISHED;
         }
-
-        return participant.getStone();
     }
 
     private Stone getAvailableStone() {
-        boolean blackUsed = participants.stream()
+        boolean blackUsed = players.stream()
                 .anyMatch(p -> p.getStone() == Stone.BLACK);
-        boolean whiteUsed = participants.stream()
+        boolean whiteUsed = players.stream()
                 .anyMatch(p -> p.getStone() == Stone.WHITE);
 
         if (!blackUsed) {
@@ -132,19 +133,15 @@ public class GomokRoom {
         throw new IllegalStateException("배정할 돌이 없습니다.");
     }
 
-    private Participant getParticipant(User user) {
-        return participants.stream()
+    private Player getParticipant(User user) {
+        return players.stream()
                 .filter(p -> p.getUser().equals(user))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_ROOM_PARTICIPANT));
     }
 
-    public Stone getWinner() {
-        return gomok.getWinner();
-    }
-
     public int getParticipantCount() {
-        return participants.size();
+        return players.size();
     }
 
     public String getGomokGameId() {

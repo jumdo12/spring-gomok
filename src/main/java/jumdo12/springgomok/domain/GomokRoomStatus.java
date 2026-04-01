@@ -4,5 +4,6 @@ public enum GomokRoomStatus {
     WAITING,
     READY,
     PLAYING,
-    FINISHED
+    FINISHED,
+    CLOSED
 }

@@ -32,7 +32,7 @@ public class GomokHistory {
     private User blackStoneUser;
 
     @Enumerated(EnumType.STRING)
-    private Stone gameResult;
+    private Stone winner;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "gomok_history_id")
@@ -44,36 +44,31 @@ public class GomokHistory {
             Long placeCount,
             User whiteStoneUser,
             User blackStoneUser,
-            Stone gameResult,
             List<PlaceResult> placeResults) {
         this.gomokId = gomokId;
         this.startTime = startTime;
         this.placeCount = placeCount;
         this.whiteStoneUser = whiteStoneUser;
         this.blackStoneUser = blackStoneUser;
-        this.gameResult = gameResult;
         this.placeResults = placeResults;
     }
 
-    public static GomokHistory create (String gomokId, LocalDateTime startTime, User whiteStoneUser, User blakcStoneUser) {
-
+    public static GomokHistory create(String gomokId, LocalDateTime startTime, User whiteStoneUser, User blackStoneUser) {
         return new GomokHistory(
                 gomokId,
                 startTime,
                 0L,
                 whiteStoneUser,
-                blakcStoneUser,
-                Stone.EMPTY,
+                blackStoneUser,
                 new ArrayList<>()
         );
     }
 
-    public PlaceResult addPlaceResult (int row, int col, Stone stone) {
-        Long count = ++placeCount;
-        PlaceResult placeResult = new PlaceResult(row, col, stone, count);
+    public void finishGame(Stone winner) {
+        this.winner = winner;
+    }
 
-        placeResults.add(placeResult);
-
-        return placeResult;
+    public void addPlaceResult(Position position, Stone stone) {
+        placeResults.add(new PlaceResult(position.row(), position.col(), stone, ++placeCount));
     }
 }

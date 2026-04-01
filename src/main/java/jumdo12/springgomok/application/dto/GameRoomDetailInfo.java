@@ -1,7 +1,7 @@
 package jumdo12.springgomok.application.dto;
 
 import jumdo12.springgomok.domain.GomokRoom;
-import jumdo12.springgomok.domain.Participant;
+import jumdo12.springgomok.domain.Player;
 
 public record GameRoomDetailInfo(
         Long roomId,
@@ -17,21 +17,21 @@ public record GameRoomDetailInfo(
         boolean isHost = room.getHost().getId().equals(currentUserId);
 
         // 내 돌 색깔 찾기
-        Participant myParticipant = room.getParticipants().stream()
+        Player myPlayer = room.getPlayers().stream()
                 .filter(p -> p.getUser().getId().equals(currentUserId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("참가자를 찾을 수 없습니다."));
 
-        String myStone = myParticipant.getStone().name();
+        String myStone = myPlayer.getStone().name();
 
         // 상대방 정보 찾기
-        Participant opponentParticipant = room.getParticipants().stream()
+        Player opponentPlayer = room.getPlayers().stream()
                 .filter(p -> !p.getUser().getId().equals(currentUserId))
                 .findFirst()
                 .orElse(null);
 
-        Long opponentId = opponentParticipant != null ? opponentParticipant.getUser().getId() : null;
-        String opponentName = opponentParticipant != null ? opponentParticipant.getUser().getNickname() : null;
+        Long opponentId = opponentPlayer != null ? opponentPlayer.getUser().getId() : null;
+        String opponentName = opponentPlayer != null ? opponentPlayer.getUser().getNickname() : null;
 
         return new GameRoomDetailInfo(
                 room.getId(),
