@@ -5,6 +5,9 @@ import jumdo12.springgomok.common.execption.ErrorCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,6 +19,7 @@ public class Gomok {
     private final Board board;
     private final GomokRule gomokRule;
     private final Turn turn;
+    private final List<PlaceRecord> moveHistory = new ArrayList<>();
 
     private Gomok(String id, Board board, GomokRule gomokRule, Turn turn) {
         this.id = id;
@@ -45,6 +49,7 @@ public class Gomok {
     public MoveResult placeStone(Position position, Player player) {
         validateTurn(player);
         board.place(position, player.getStone());
+        moveHistory.add(new PlaceRecord(position, player.getStone()));
 
         if (gomokRule.isWinningMove(board, position, player.getStone())) {
             return new MoveResult(true);
@@ -52,6 +57,10 @@ public class Gomok {
 
         turn.next();
         return new MoveResult(false);
+    }
+
+    public List<PlaceRecord> getMoveHistory() {
+        return Collections.unmodifiableList(moveHistory);
     }
 
     private void validateTurn(Player player) {
