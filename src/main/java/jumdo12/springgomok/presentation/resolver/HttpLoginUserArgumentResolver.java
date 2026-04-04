@@ -4,8 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
-import jumdo12.springgomok.domain.User;
-import jumdo12.springgomok.domain.UserRepository;
 import jumdo12.springgomok.presentation.session.SessionProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -17,7 +15,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 @RequiredArgsConstructor
-public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class HttpLoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final SessionProvider sessionProvider;
 

@@ -102,7 +102,7 @@ public class GomokRoom {
         players.remove(player);
     }
 
-    public void placeGomokStone(Position position, User user) {
+    public MoveResult placeGomokStone(Position position, User user) {
         if(gomokRoomStatus != GomokRoomStatus.PLAYING) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
@@ -115,6 +115,8 @@ public class GomokRoom {
             this.winner = player;
             gomokRoomStatus = GomokRoomStatus.FINISHED;
         }
+
+        return moveResult;
     }
 
     private Stone getAvailableStone() {

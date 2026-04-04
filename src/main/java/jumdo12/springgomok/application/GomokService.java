@@ -15,28 +15,18 @@ public class GomokService {
     private final UserRepository userRepository;
     private final GomokHistoryService gomokHistoryService;
 
-    public void placeGomok(Long roomId, LoginUser loginUser, int row, int col) {
+    public Position placeGomok(Long roomId, LoginUser loginUser, int row, int col) {
         GomokRoom gomokRoom = findRoom(roomId);
         User user = findUser(loginUser.id());
 
-        gomokRoom.placeGomokStone(new Position(row, col), user);
+        MoveResult moveResult = gomokRoom.placeGomokStone(new Position(row, col), user);
         gomokRoomRepository.update(gomokRoom);
 
-        if (gomokRoom.getGomokRoomStatus() == GomokRoomStatus.FINISHED) {
+        if (moveResult.isWinningMove()) {
             gomokHistoryService.saveGomokHistory(gomokRoom);
         }
-    }
 
-    public void switchStone(Long roomId, LoginUser loginUser) {
-        GomokRoom gomokRoom = findRoom(roomId);
-        User user = findUser(loginUser.id());
-
-        if (!gomokRoom.isHost(user)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-
-        gomokRoom.switchParticipantsStone();
-        gomokRoomRepository.update(gomokRoom);
+        return new Position(row, col);
     }
 
     private GomokRoom findRoom(Long roomId) {

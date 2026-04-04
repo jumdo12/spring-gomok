@@ -6,12 +6,14 @@ import jumdo12.springgomok.application.dto.GameRoomInfo;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
+import jumdo12.springgomok.presentation.dto.StoneSwitchedEvent;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -83,6 +85,39 @@ public class GomokRoomService {
     public GomokRoom findRoom(Long roomId) {
         return gomokRoomRepository.findById(roomId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
+    }
+
+    public StoneSwitchedEvent switchStone(Long roomId, LoginUser loginUser) {
+        GomokRoom gomokRoom = findRoom(roomId);
+        User user = findUser(loginUser.id());
+
+        if (!gomokRoom.isHost(user)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+
+        gomokRoom.switchParticipantsStone();
+        gomokRoomRepository.update(gomokRoom);
+
+        return buildStoneSwitchedEvent(gomokRoom.getPlayers());
+    }
+
+    private StoneSwitchedEvent buildStoneSwitchedEvent(Set<Player> players) {
+        Player black = findPlayerByStone(players, Stone.BLACK);
+        Player white = findPlayerByStone(players, Stone.WHITE);
+
+        return new StoneSwitchedEvent(
+                black != null ? black.getUser().getId() : null,
+                black != null ? black.getUser().getNickname() : null,
+                white != null ? white.getUser().getId() : null,
+                white != null ? white.getUser().getNickname() : null
+        );
+    }
+
+    private Player findPlayerByStone(Set<Player> players, Stone stone) {
+        return players.stream()
+                .filter(p -> p.getStone() == stone)
+                .findFirst()
+                .orElse(null);
     }
 
     private User findUser(Long userId) {
