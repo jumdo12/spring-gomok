@@ -2,6 +2,8 @@ package jumdo12.springgomok.presentation;
 
 import jumdo12.springgomok.application.GomokRoomService;
 import jumdo12.springgomok.application.UserService;
+import jumdo12.springgomok.application.dto.ChatMessage;
+import jumdo12.springgomok.infra.stomp.StompDestination;
 import jumdo12.springgomok.presentation.dto.*;
 import jumdo12.springgomok.presentation.resolver.AuthUser;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
@@ -16,8 +18,6 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class GomokRoomStompController {
 
-    private static final String ROOM_DESTINATION = "/sub/room/";
-
     private final GomokRoomService gomokRoomService;
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -28,8 +28,6 @@ public class GomokRoomStompController {
             @AuthUser LoginUser loginUser
     ) {
         gomokRoomService.joinRoom(roomId, loginUser);
-        var user = userService.findUser(loginUser.id());
-        sendToRoom(roomId, new ParticipantJoinedEvent(user.getId(), user.getNickname()));
     }
 
     @MessageMapping("/room/{roomId}/leave")
@@ -37,9 +35,7 @@ public class GomokRoomStompController {
             @DestinationVariable Long roomId,
             @AuthUser LoginUser loginUser
     ) {
-        var user = userService.findUser(loginUser.id());
         gomokRoomService.leaveRoom(roomId, loginUser);
-        sendToRoom(roomId, new ParticipantLeftEvent(user.getId(), user.getNickname()));
     }
 
     @MessageMapping("/room/{roomId}/start")
@@ -66,11 +62,12 @@ public class GomokRoomStompController {
             @AuthUser LoginUser loginUser,
             @Payload ChatRequest chatRequest
     ) {
-        var user = userService.findUser(loginUser.id());
-        sendToRoom(roomId, new ChatMessageEvent(user.getNickname(), chatRequest.content()));
+        ChatMessage chatMessage = gomokRoomService.sendChatMessage(loginUser, chatRequest);
+
+        sendToRoom(roomId, new ChatMessageEvent(chatMessage.from(), chatMessage.content()));
     }
 
     private void sendToRoom(Long roomId, Object payload) {
-        messagingTemplate.convertAndSend(ROOM_DESTINATION + roomId, payload);
+        messagingTemplate.convertAndSend(StompDestination.ROOM + roomId, payload);
     }
 }

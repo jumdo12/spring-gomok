@@ -20,6 +20,6 @@ public class StompLoginUserArgumentResolver implements HandlerMethodArgumentReso
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompPrincipal user = (StompPrincipal) accessor.getUser();
 
-        return user.userId();
+        return new LoginUser(user.userId());
     }
 }

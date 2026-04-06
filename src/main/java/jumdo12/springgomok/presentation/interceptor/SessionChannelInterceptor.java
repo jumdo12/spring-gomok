@@ -3,6 +3,7 @@ package jumdo12.springgomok.presentation.interceptor;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.presentation.resolver.StompPrincipal;
+import jumdo12.springgomok.presentation.session.SessionProvider;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -35,7 +36,7 @@ public class SessionChannelInterceptor implements ChannelInterceptor {
     }
 
     private void authenticateUser(StompHeaderAccessor accessor) {
-        Long userId = (Long) accessor.getSessionAttributes().get(StompPrincipalHandshakeInterceptor.USER_ID);
+        Long userId = (Long) accessor.getSessionAttributes().get(SessionProvider.SESSION_USER_KEY);
 
         if (userId == null) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);

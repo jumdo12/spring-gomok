@@ -16,7 +16,6 @@ public record GameRoomDetailInfo(
     public static GameRoomDetailInfo from(GomokRoom room, Long currentUserId) {
         boolean isHost = room.getHost().getId().equals(currentUserId);
 
-        // 내 돌 색깔 찾기
         Player myPlayer = room.getPlayers().stream()
                 .filter(p -> p.getUser().getId().equals(currentUserId))
                 .findFirst()
@@ -24,7 +23,6 @@ public record GameRoomDetailInfo(
 
         String myStone = myPlayer.getStone().name();
 
-        // 상대방 정보 찾기
         Player opponentPlayer = room.getPlayers().stream()
                 .filter(p -> !p.getUser().getId().equals(currentUserId))
                 .findFirst()

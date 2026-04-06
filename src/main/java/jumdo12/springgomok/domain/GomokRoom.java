@@ -5,6 +5,7 @@ import jumdo12.springgomok.common.execption.ErrorCode;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -37,7 +38,6 @@ public class GomokRoom {
     public static GomokRoom create(String roomName, User host) {
         GomokRoom room = new GomokRoom(null, roomName, host, null, GomokRoomStatus.WAITING);
         room.players.add(new Player(host, Stone.BLACK));
-
         return room;
     }
 
@@ -54,21 +54,19 @@ public class GomokRoom {
 
         Stone stone = getAvailableStone();
         gomokRoomStatus = GomokRoomStatus.READY;
-
         players.add(new Player(user, stone));
     }
 
-    public void startGomok(User user) {
-        if(!isHost(user)) {
+    public void startGomok(Player player) {
+        if (!isHost(player)) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
 
-        if(gomokRoomStatus != GomokRoomStatus.READY) {
+        if (gomokRoomStatus != GomokRoomStatus.READY) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
         this.gomok = Gomok.create(new GomokRule(), players);
-
         gomokRoomStatus = GomokRoomStatus.PLAYING;
     }
 
@@ -82,32 +80,33 @@ public class GomokRoom {
         }
     }
 
-    public boolean isHost(User user) {
-        return host.equals(user);
+    public boolean isHost(Player player) {
+        return host.equals(player.getUser());
     }
 
-    public void leave(User user) {
-        Player player = getParticipant(user);
-
+    public void leave(Player player) {
         if (gomokRoomStatus == GomokRoomStatus.PLAYING) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
 
-        if (isHost(user)) {
+        players.remove(player);
+
+        if (players.isEmpty()) {
             gomokRoomStatus = GomokRoomStatus.CLOSED;
             return;
         }
 
-        gomokRoomStatus = GomokRoomStatus.WAITING;
-        players.remove(player);
-    }
-
-    public MoveResult placeGomokStone(Position position, User user) {
-        if(gomokRoomStatus != GomokRoomStatus.PLAYING) {
-            throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
+        if (isHost(player)) {
+            host = players.iterator().next().getUser();
         }
 
-        Player player = getParticipant(user);
+        gomokRoomStatus = GomokRoomStatus.WAITING;
+    }
+
+    public MoveResult placeGomokStone(Position position, Player player) {
+        if (gomokRoomStatus != GomokRoomStatus.PLAYING) {
+            throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
+        }
 
         MoveResult moveResult = gomok.placeStone(position, player);
 
@@ -119,23 +118,7 @@ public class GomokRoom {
         return moveResult;
     }
 
-    private Stone getAvailableStone() {
-        boolean blackUsed = players.stream()
-                .anyMatch(p -> p.getStone() == Stone.BLACK);
-        boolean whiteUsed = players.stream()
-                .anyMatch(p -> p.getStone() == Stone.WHITE);
-
-        if (!blackUsed) {
-            return Stone.BLACK;
-        }
-        if (!whiteUsed) {
-            return Stone.WHITE;
-        }
-
-        throw new IllegalStateException("배정할 돌이 없습니다.");
-    }
-
-    private Player getParticipant(User user) {
+    public Player findPlayer(User user) {
         return players.stream()
                 .filter(p -> p.getUser().equals(user))
                 .findFirst()
@@ -153,7 +136,21 @@ public class GomokRoom {
         return players.size();
     }
 
+    public Map<Position, Stone> getBoardGrid() {
+        return gomok.getBoard().getGrid();
+    }
+
     public String getGomokGameId() {
         return gomok.getId();
+    }
+
+    private Stone getAvailableStone() {
+        boolean blackUsed = players.stream().anyMatch(p -> p.getStone() == Stone.BLACK);
+        boolean whiteUsed = players.stream().anyMatch(p -> p.getStone() == Stone.WHITE);
+
+        if (!blackUsed) return Stone.BLACK;
+        if (!whiteUsed) return Stone.WHITE;
+
+        throw new IllegalStateException("배정할 돌이 없습니다.");
     }
 }

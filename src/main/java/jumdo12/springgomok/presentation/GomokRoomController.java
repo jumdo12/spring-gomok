@@ -6,6 +6,7 @@ import jumdo12.springgomok.application.UserService;
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
 import jumdo12.springgomok.application.dto.GameRoomInfo;
 import jumdo12.springgomok.domain.GomokRoom;
+import jumdo12.springgomok.presentation.dto.PlacedStone;
 import jumdo12.springgomok.presentation.dto.RoomCreateRequest;
 import jumdo12.springgomok.presentation.resolver.AuthUser;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
@@ -39,6 +40,14 @@ public class GomokRoomController {
             @AuthUser LoginUser loginUser) {
         GameRoomDetailInfo gameDetailInfo = gomokRoomService.getGameDetailInfo(roomId, loginUser);
         return ResponseEntity.ok(gameDetailInfo);
+    }
+
+    @GetMapping("/{roomId}/board")
+    public ResponseEntity<List<PlacedStone>> getBoard(
+            @PathVariable Long roomId,
+            @AuthUser LoginUser loginUser
+    ) {
+        return ResponseEntity.ok(gomokRoomService.getBoardState(roomId));
     }
 
     @GetMapping("/waitings")

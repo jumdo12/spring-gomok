@@ -2,6 +2,7 @@ package jumdo12.springgomok.presentation.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jumdo12.springgomok.presentation.session.SessionProvider;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -13,8 +14,6 @@ import java.util.Map;
 
 @Component
 public class StompPrincipalHandshakeInterceptor implements HandshakeInterceptor {
-
-    public static final String USER_ID = "userId";
 
     @Override
     public boolean beforeHandshake(
@@ -31,13 +30,13 @@ public class StompPrincipalHandshakeInterceptor implements HandshakeInterceptor 
             return false;
         }
 
-        Long userId = (Long) session.getAttribute(USER_ID);
+        Long userId = (Long) session.getAttribute(SessionProvider.SESSION_USER_KEY);
 
         if(userId == null) {
             return false;
         }
 
-        attributes.put(USER_ID, userId);
+        attributes.put(SessionProvider.SESSION_USER_KEY, userId);
         return true;
     }
 

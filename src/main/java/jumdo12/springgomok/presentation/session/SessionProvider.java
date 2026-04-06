@@ -9,7 +9,7 @@ import java.util.Optional;
 @Component
 public class SessionProvider {
 
-    private final static String SESSION_USER_KEY = "USER_ID";
+    public final static String SESSION_USER_KEY = "USER_ID";
 
     public void createUserSession(HttpSession httpSession, User user) {
         httpSession.setAttribute(SESSION_USER_KEY, user.getId());

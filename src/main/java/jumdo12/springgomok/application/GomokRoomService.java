@@ -3,12 +3,16 @@ package jumdo12.springgomok.application;
 import jumdo12.springgomok.application.dto.ChatMessage;
 import jumdo12.springgomok.application.dto.GameRoomDetailInfo;
 import jumdo12.springgomok.application.dto.GameRoomInfo;
+import jumdo12.springgomok.application.event.RoomUpdatedEvent;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
+import jumdo12.springgomok.presentation.dto.ChatRequest;
+import jumdo12.springgomok.presentation.dto.PlacedStone;
 import jumdo12.springgomok.presentation.dto.StoneSwitchedEvent;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +25,7 @@ public class GomokRoomService {
 
     private final GomokRoomRepository gomokRoomRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public GomokRoom createRoom(String roomName, LoginUser loginUser) {
         User user = findUser(loginUser.id());
@@ -34,18 +39,15 @@ public class GomokRoomService {
 
         room.join(user);
         gomokRoomRepository.update(room);
+        eventPublisher.publishEvent(new RoomUpdatedEvent(roomId, room));
     }
 
     public void leaveRoom(Long roomId, LoginUser loginUser) {
         User user = findUser(loginUser.id());
         GomokRoom room = findRoom(roomId);
+        Player player = room.findPlayer(user);
 
-        if (room.getParticipantCount() == 1) {
-            gomokRoomRepository.deleteById(roomId);
-            return;
-        }
-
-        room.leave(user);
+        room.leave(player);
 
         if (room.getGomokRoomStatus() == GomokRoomStatus.CLOSED) {
             gomokRoomRepository.deleteById(roomId);
@@ -53,20 +55,21 @@ public class GomokRoomService {
         }
 
         gomokRoomRepository.update(room);
+        eventPublisher.publishEvent(new RoomUpdatedEvent(roomId, room));
     }
 
     public void startGame(Long roomId, LoginUser loginUser) {
         User user = findUser(loginUser.id());
         GomokRoom room = findRoom(roomId);
+        Player player = room.findPlayer(user);
 
-        room.startGomok(user);
+        room.startGomok(player);
         gomokRoomRepository.update(room);
     }
 
     public GameRoomDetailInfo getGameDetailInfo(Long roomId, LoginUser loginUser) {
         User user = findUser(loginUser.id());
         GomokRoom room = findRoom(roomId);
-
         return GameRoomDetailInfo.from(room, user.getId());
     }
 
@@ -77,28 +80,42 @@ public class GomokRoomService {
                 .toList();
     }
 
-    public ChatMessage sendChatMessage(LoginUser loginUser, String content) {
+    public ChatMessage sendChatMessage(LoginUser loginUser, ChatRequest chatMessage) {
         User user = findUser(loginUser.id());
-        return new ChatMessage(user.getNickname(), LocalDateTime.now(), content);
+        return new ChatMessage(user.getNickname(), LocalDateTime.now(), chatMessage.content());
+    }
+
+    public List<PlacedStone> getBoardState(Long roomId) {
+        GomokRoom room = findRoom(roomId);
+
+        if (room.getGomokRoomStatus() != GomokRoomStatus.PLAYING &&
+                room.getGomokRoomStatus() != GomokRoomStatus.FINISHED) {
+            throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
+        }
+
+        return room.getBoardGrid().entrySet().stream()
+                .map(e -> new PlacedStone(e.getKey().row(), e.getKey().col(), e.getValue()))
+                .toList();
+    }
+
+    public StoneSwitchedEvent switchStone(Long roomId, LoginUser loginUser) {
+        User user = findUser(loginUser.id());
+        GomokRoom room = findRoom(roomId);
+        Player player = room.findPlayer(user);
+
+        if (!room.isHost(player)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+
+        room.switchParticipantsStone();
+        gomokRoomRepository.update(room);
+
+        return buildStoneSwitchedEvent(room.getPlayers());
     }
 
     public GomokRoom findRoom(Long roomId) {
         return gomokRoomRepository.findById(roomId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_NOT_FOUND));
-    }
-
-    public StoneSwitchedEvent switchStone(Long roomId, LoginUser loginUser) {
-        GomokRoom gomokRoom = findRoom(roomId);
-        User user = findUser(loginUser.id());
-
-        if (!gomokRoom.isHost(user)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-
-        gomokRoom.switchParticipantsStone();
-        gomokRoomRepository.update(gomokRoom);
-
-        return buildStoneSwitchedEvent(gomokRoom.getPlayers());
     }
 
     private StoneSwitchedEvent buildStoneSwitchedEvent(Set<Player> players) {
