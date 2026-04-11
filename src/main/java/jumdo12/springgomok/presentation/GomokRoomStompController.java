@@ -62,7 +62,7 @@ public class GomokRoomStompController {
             @AuthUser LoginUser loginUser,
             @Payload ChatRequest chatRequest
     ) {
-        ChatMessage chatMessage = gomokRoomService.sendChatMessage(loginUser, chatRequest);
+        ChatMessage chatMessage = gomokRoomService.sendChatMessage(roomId, loginUser, chatRequest);
 
         sendToRoom(roomId, new ChatMessageEvent(chatMessage.from(), chatMessage.content()));
     }

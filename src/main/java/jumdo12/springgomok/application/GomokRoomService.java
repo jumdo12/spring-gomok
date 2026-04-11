@@ -80,8 +80,11 @@ public class GomokRoomService {
                 .toList();
     }
 
-    public ChatMessage sendChatMessage(LoginUser loginUser, ChatRequest chatMessage) {
+    public ChatMessage sendChatMessage(Long roomId, LoginUser loginUser, ChatRequest chatMessage) {
         User user = findUser(loginUser.id());
+        GomokRoom room = findRoom(roomId);
+        room.findPlayer(user);
+
         return new ChatMessage(user.getNickname(), LocalDateTime.now(), chatMessage.content());
     }
 

@@ -71,10 +71,9 @@ public class GomokRoom {
     }
 
     public void switchParticipantsStone() {
-        if (gomokRoomStatus == GomokRoomStatus.PLAYING) {
+        if (gomokRoomStatus != GomokRoomStatus.WAITING && gomokRoomStatus != GomokRoomStatus.READY) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_STATUS);
         }
-
         for (Player player : players) {
             player.switchStone();
         }

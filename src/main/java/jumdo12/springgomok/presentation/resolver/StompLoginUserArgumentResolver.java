@@ -1,5 +1,7 @@
 package jumdo12.springgomok.presentation.resolver;
 
+import jumdo12.springgomok.common.execption.BusinessException;
+import jumdo12.springgomok.common.execption.ErrorCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
@@ -19,6 +21,10 @@ public class StompLoginUserArgumentResolver implements HandlerMethodArgumentReso
     public Object resolveArgument(MethodParameter parameter, Message<?> message) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompPrincipal user = (StompPrincipal) accessor.getUser();
+
+        if (user == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
 
         return new LoginUser(user.userId());
     }
