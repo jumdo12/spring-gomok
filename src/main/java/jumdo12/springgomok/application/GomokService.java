@@ -1,10 +1,12 @@
 package jumdo12.springgomok.application;
 
+import jumdo12.springgomok.application.event.GameFinishedEvent;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 import jumdo12.springgomok.domain.*;
 import jumdo12.springgomok.presentation.resolver.LoginUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,29 +16,26 @@ public class GomokService {
     private final GomokRoomRepository gomokRoomRepository;
     private final UserRepository userRepository;
     private final GomokHistoryService gomokHistoryService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public void placeGomok(Long roomId, LoginUser loginUser, int row, int col) {
+    public Position placeGomok(Long roomId, LoginUser loginUser, Position position) {
         GomokRoom gomokRoom = findRoom(roomId);
         User user = findUser(loginUser.id());
+        Player player = gomokRoom.findPlayer(user);
 
-        gomokRoom.placeGomokStone(new Position(row, col), user);
+        MoveResult moveResult = gomokRoom.placeGomokStone(position, player);
         gomokRoomRepository.update(gomokRoom);
 
-        if (gomokRoom.getGomokRoomStatus() == GomokRoomStatus.FINISHED) {
+        if (moveResult.isWinningMove()) {
             gomokHistoryService.saveGomokHistory(gomokRoom);
-        }
-    }
-
-    public void switchStone(Long roomId, LoginUser loginUser) {
-        GomokRoom gomokRoom = findRoom(roomId);
-        User user = findUser(loginUser.id());
-
-        if (!gomokRoom.isHost(user)) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
+            eventPublisher.publishEvent(new GameFinishedEvent(
+                    roomId,
+                    gomokRoom.getWinner().getUser().getNickname(),
+                    gomokRoom.getWinner().getStone()
+            ));
         }
 
-        gomokRoom.switchParticipantsStone();
-        gomokRoomRepository.update(gomokRoom);
+        return position;
     }
 
     private GomokRoom findRoom(Long roomId) {

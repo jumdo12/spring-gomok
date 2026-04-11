@@ -3,6 +3,7 @@ package jumdo12.springgomok.domain;
 import jumdo12.springgomok.common.execption.BusinessException;
 import jumdo12.springgomok.common.execption.ErrorCode;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,5 +36,9 @@ public class Board {
 
     public Optional<Stone> get(Position position) {
         return Optional.ofNullable(grid.get(position));
+    }
+
+    public Map<Position, Stone> getGrid() {
+        return Collections.unmodifiableMap(grid);
     }
 }

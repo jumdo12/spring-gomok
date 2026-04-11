@@ -2,8 +2,6 @@ package jumdo12.springgomok.presentation.dto;
 
 import jumdo12.springgomok.domain.Stone;
 
-public record PlaceResponse(
-        String gameStatus,
-        Stone winner
-) {
+public record PlacedStone(int row, int col, Stone stone) {
+
 }
